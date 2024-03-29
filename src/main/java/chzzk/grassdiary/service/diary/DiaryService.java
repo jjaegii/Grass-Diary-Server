@@ -126,13 +126,13 @@ public class DiaryService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        Diary diary = diaryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. id = " + id));
+    public void delete(Long diaryId) {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
 
         // diaryId를 이용해서 diaryTag를 모두 찾아내기
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
-        System.out.println("diaryTags 찾기 통과");
+
         // diaryTag를 이용해서 MemberTag를 모두 찾아내기
         List<MemberTags> memberTags = new ArrayList<>();
         List<TagList> tags = new ArrayList<>();
@@ -140,31 +140,34 @@ public class DiaryService {
             memberTags.add(diaryTag.getMemberTags());
             tags.add(diaryTag.getMemberTags().getTagList());
         }
-        System.out.println("memberTag, tag 찾기 통과");
 
         // diaryTag 삭제 -> deleteAllInBatch 고려해보기
-        System.out.println("diaryTag 삭제 시작");
         for (DiaryTag diaryTag : diaryTags) {
             diaryTagRepository.delete(diaryTag);
         }
-        System.out.println("diaryTag 삭제 끝");
 
         // MemberTag 삭제
-        System.out.println("memberTags 삭제 시작");
         for (MemberTags memberTag : memberTags) {
             memberTag.decrementCount();
             if (memberTag.getMemberTagUsageCount() == 0) {
                 memberTagsRepository.delete(memberTag);
             }
         }
-        System.out.println("memberTags 삭제 끝");
+
         for (TagList tag : tags) {
             tag.decrementCount();
             if (tag.getTagUsageCount() == 0) {
                 tagListRepository.delete(tag);
             }
         }
-        System.out.println("tag 감소와 삭제 통과");
+
+        // 해당 일기의 좋아요 찾기
+        List<DiaryLike> diaryLikes = diaryLikeRepository.findAllByDiaryId(diaryId);
+
+        // 좋아요 삭제
+        for (DiaryLike diaryLike : diaryLikes) {
+            diaryLikeRepository.delete(diaryLike);
+        }
 
         diaryRepository.delete(diary);
     }
