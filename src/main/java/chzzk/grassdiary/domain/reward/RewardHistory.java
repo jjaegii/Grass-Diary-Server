@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,11 @@ public class RewardHistory extends BaseCreatedTimeEntity {
     private RewardType rewardType;
 
     private Integer rewardPoint;
+
+    @Builder
+    public RewardHistory(Member member, RewardType rewardType, Integer rewardPoint) {
+        this.member = member;
+        this.rewardType = rewardType;
+        this.rewardPoint = rewardPoint;
+    }
 }
