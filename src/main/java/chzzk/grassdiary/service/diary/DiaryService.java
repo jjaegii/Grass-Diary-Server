@@ -14,6 +14,9 @@ import chzzk.grassdiary.domain.diary.tag.TagList;
 import chzzk.grassdiary.domain.diary.tag.TagListRepository;
 import chzzk.grassdiary.domain.member.Member;
 import chzzk.grassdiary.domain.member.MemberRepository;
+import chzzk.grassdiary.domain.reward.RewardHistory;
+import chzzk.grassdiary.domain.reward.RewardHistoryRepository;
+import chzzk.grassdiary.domain.reward.RewardType;
 import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
@@ -38,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class DiaryService {
-
     private final DiaryRepository diaryRepository;
     private final DiaryLikeRepository diaryLikeRepository;
     private final DiaryImageRepository diaryImageRepository;
@@ -46,6 +48,7 @@ public class DiaryService {
     private final MemberTagsRepository memberTagsRepository;
     private final MemberRepository memberRepository;
     private final DiaryTagRepository diaryTagRepository;
+    private final RewardHistoryRepository rewardHistoryRepository;
 
     @Transactional
     public Long save(Long id, DiarySaveRequestDTO requestDto) {
@@ -66,9 +69,17 @@ public class DiaryService {
             }
         }
 
-        Random random = new Random();
-        member.addRandomPoint(random.nextInt(10) + 1);
+        long seed = System.currentTimeMillis();
+        Random random = new Random(seed);
+        int rewardPoint = random.nextInt(10) + 1;
 
+        member.addRandomPoint(rewardPoint);
+        RewardHistory rewardHistory = rewardHistoryRepository
+                .save(new RewardHistory(member, RewardType.PLUS_DIARY_WRITE, rewardPoint));
+
+        if (rewardHistory.getId() == null) {
+            throw new IllegalArgumentException("일기 히스토리 저장 오류");
+        }
         return diary.getId();
     }
 
