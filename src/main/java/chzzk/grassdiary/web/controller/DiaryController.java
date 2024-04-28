@@ -7,6 +7,11 @@ import chzzk.grassdiary.web.dto.diary.DiaryDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
 import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryUpdateRequestDTO;
+import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
+import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
+import chzzk.grassdiary.web.exceptions.ErrorObject;
+import chzzk.grassdiary.web.exceptions.MemberNotFoundException;
+import chzzk.grassdiary.web.exceptions.NotLikedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,4 +90,30 @@ public class DiaryController {
     public Long deleteLike(@PathVariable("diaryId") Long diaryId, @PathVariable("memberId") Long memberId) {
         return diaryService.deleteLike(diaryId, memberId);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleException(MemberNotFoundException ex) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleException(DiaryNotFoundException ex) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleException(AlreadyLikedException ex) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleException(NotLikedException ex) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
+
 }
