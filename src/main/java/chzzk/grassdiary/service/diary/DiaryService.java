@@ -23,6 +23,10 @@ import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
 import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryUpdateRequestDTO;
 import chzzk.grassdiary.web.dto.member.GrassInfoDTO;
+import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
+import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
+import chzzk.grassdiary.web.exceptions.MemberNotFoundException;
+import chzzk.grassdiary.web.exceptions.NotLikedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,7 +57,7 @@ public class DiaryService {
     @Transactional
     public Long save(Long id, DiarySaveRequestDTO requestDto) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
 
         Diary diary = diaryRepository.save(requestDto.toEntity(member));
 
@@ -86,7 +90,7 @@ public class DiaryService {
     @Transactional
     public Long update(Long id, DiaryUpdateRequestDTO requestDto) {
         Diary diary = diaryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
         // 기존 diaryTag, memberTags, tagList 찾기
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
         List<MemberTags> memberTags = new ArrayList<>();
@@ -139,7 +143,7 @@ public class DiaryService {
     @Transactional
     public void delete(Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
 
         // diaryId를 이용해서 diaryTag를 모두 찾아내기
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
@@ -186,7 +190,7 @@ public class DiaryService {
     @Transactional(readOnly = true)
     public DiaryResponseDTO findById(Long diaryId, Long logInMemberId) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
         //조회한 결과를 담은 DTO 객체를 생성해서 반환
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
         List<TagList> tags = new ArrayList<>();
@@ -202,7 +206,7 @@ public class DiaryService {
     @Transactional(readOnly = true)
     public Page<DiaryDTO> findAll(Pageable pageable, Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
 
         return diaryRepository.findDiaryByMemberId(memberId, pageable)
                 .map(diary -> {
@@ -262,7 +266,7 @@ public class DiaryService {
         LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
 
         List<Diary> thisMonthHistory = diaryRepository.findByMemberIdAndCreatedAtBetween(memberId, startOfDay,
                 endOfToday);
@@ -277,14 +281,14 @@ public class DiaryService {
     @Transactional
     public Long addLike(Long diaryId, Long memberId) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다. memberId = " + memberId));
+                .orElseThrow(() -> new MemberNotFoundException("해당 멤버가 존재하지 않습니다. memberId = " + memberId));
 
         diaryLikeRepository.findByDiaryIdAndMemberId(diaryId, memberId)
                 .ifPresent(diaryLike -> {
-                    throw new IllegalArgumentException("좋아요를 이미 눌렀습니다.");
+                    throw new AlreadyLikedException("좋아요를 이미 눌렀습니다.");
                 });
 
         DiaryLike diaryLike = DiaryLike.builder()
@@ -301,10 +305,10 @@ public class DiaryService {
     @Transactional
     public Long deleteLike(Long diaryId, Long memberId) {
         Diary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
 
         DiaryLike diaryLike = diaryLikeRepository.findByDiaryIdAndMemberId(diaryId, memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요를 누르지 않았습니다."));
+                .orElseThrow(() -> new NotLikedException("해당 게시글에 좋아요를 누르지 않았습니다."));
 
         diary.deleteDiaryLike(diaryLike);
         diaryLikeRepository.delete(diaryLike);
