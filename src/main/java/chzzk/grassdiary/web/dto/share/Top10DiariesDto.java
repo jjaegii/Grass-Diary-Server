@@ -18,7 +18,7 @@ public record Top10DiariesDto(
                 .map(d -> new Top10DiariesDto(
                         d.getId(),
                         d.getContent(),
-                        d.getLikeCount(),
+                        d.getDiaryLikes().size(),
                         d.getMember().getId(),
                         d.getMember().getNickname(),
                         d.getCreatedAt()

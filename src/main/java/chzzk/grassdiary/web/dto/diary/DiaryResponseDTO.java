@@ -32,7 +32,7 @@ public class DiaryResponseDTO {
         this.createdAt = diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
         this.tags = tags;
         this.transparency = diary.getConditionLevel().getTransparency();
-        this.likeCount = diary.getLikeCount();
+        this.likeCount = diary.getDiaryLikes().size();
         this.isLikedByLogInMember = isLikedByLogInMember;
     }
 }

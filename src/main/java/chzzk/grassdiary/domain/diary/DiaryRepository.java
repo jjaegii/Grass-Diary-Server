@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Page<Diary> findDiaryByMemberId(Long memberId, Pageable pageable);
@@ -21,9 +22,10 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     @Query("SELECT d FROM Diary d WHERE d.isPrivate = false"
             + " AND d.createdAt >= :startOfWeek AND d.createdAt <= :endOfWeek"
-            + " ORDER BY d.likeCount DESC, d.createdAt ASC")
-    Page<Diary> findTop10DiariesThisWeek(LocalDateTime startOfWeek, LocalDateTime endOfWeek, PageRequest pageRequest);
-    
+            + " ORDER BY SIZE(d.diaryLikes) DESC, d.createdAt ASC")
+    Page<Diary> findTop10DiariesThisWeek(@Param("startOfWeek") LocalDateTime startOfWeek,
+                                         @Param("endOfWeek") LocalDateTime endOfWeek, PageRequest pageRequest);
+
     @Query("SELECT d FROM Diary d WHERE d.isPrivate = false"
             + " AND d.id < :cursorId"
             + " ORDER BY d.createdAt DESC, d.id DESC")

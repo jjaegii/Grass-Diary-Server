@@ -22,7 +22,7 @@ public record LatestDiaryDto(
         return new LatestDiaryDto(
                 diary.getId(),
                 diary.getContent(),
-                diary.getLikeCount(),
+                diary.getDiaryLikes().size(),
                 diary.getMember().getId(),
                 diary.getMember().getNickname(),
                 diary.getCreatedAt()
