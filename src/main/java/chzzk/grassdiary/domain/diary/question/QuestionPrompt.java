@@ -41,10 +41,14 @@ public enum QuestionPrompt {
         this.question = question;
     }
 
-    public static String getRandomQuestion() {
+    public static QuestionPrompt getRandomQuestion() {
         random.setSeed(System.currentTimeMillis());
         QuestionPrompt[] prompt = values();
 
-        return prompt[random.nextInt(prompt.length)].question;
+        return prompt[random.nextInt(prompt.length)];
+    }
+
+    public String getQuestion() {
+        return question;
     }
 }
