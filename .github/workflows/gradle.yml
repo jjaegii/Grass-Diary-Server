@@ -48,6 +48,7 @@ jobs:
     #   run: gradle build
 
   docker-build:
+    needs: jar-build
     runs-on: ubuntu-latest
 
     steps:
