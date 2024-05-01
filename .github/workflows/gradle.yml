@@ -78,7 +78,7 @@ jobs:
             fi
             
             docker pull yeseulhong/grass-diary:latest;
-            docker run -d -p 8080:8080 \\
+            docker run -d -p 8080:8080 -p 3306:3306 \\
               -e GOOGLE_CLIENT_ID=\$GOOGLE_CLIENT_ID \\
               -e GOOGLE_CLIENT_SECRET=\$GOOGLE_CLIENT_SECRET \\
               -e JWT_ACCESS_SECRET_KEY=\$JWT_ACCESS_SECRET_KEY \\
