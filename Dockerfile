@@ -7,6 +7,7 @@ WORKDIR /app
 COPY build/libs/grassdiary-0.0.1-SNAPSHOT.jar /app
 
 EXPOSE 8080
+EXPOSE 3306
 
 CMD ["java", "-jar", "grassdiary-0.0.1-SNAPSHOT.jar"]
 
