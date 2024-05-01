@@ -9,9 +9,15 @@ on:
 jobs:
   jar-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      JWT_ACCESS_SECRET_KEY: ${{ secrets.JWT_ACCESS_SECRET_KEY }}
+      JWT_REFRESH_SECRET_KEY: ${{ secrets.JWT_REFRESH_SECRET_KEY }}
+      DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
+      DB_USER_ID: ${{ secrets.DB_USER_ID }}
+      DB_USER_PW: ${{ secrets.DB_USER_PW }}
+    
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -57,13 +63,6 @@ jobs:
         PRIVATE_KEY: ${{ secrets.CHZZK_AWS_PRIVATE_KEY }}
         USER: ${{ secrets.EC2_USER }}
         HOST: ${{ secrets.EC2_HOST }}
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        JWT_ACCESS_SECRET_KEY: ${{ secrets.JWT_ACCESS_SECRET_KEY }}
-        JWT_REFRESH_SECRET_KEY: ${{ secrets.JWT_REFRESH_SECRET_KEY }}
-        DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
-        DB_USER_ID: ${{ secrets.DB_USER_ID }}
-        DB_USER_PW: ${{ secrets.DB_USER_PW }}
 
       steps:
       - name: deployEC2
@@ -78,12 +77,5 @@ jobs:
             fi
             
             docker pull yeseulhong/grass-diary:latest;
-            docker run -d -p 8080:8080 -p 3306:3306 \\
-              -e GOOGLE_CLIENT_ID=\$GOOGLE_CLIENT_ID \\
-              -e GOOGLE_CLIENT_SECRET=\$GOOGLE_CLIENT_SECRET \\
-              -e JWT_ACCESS_SECRET_KEY=\$JWT_ACCESS_SECRET_KEY \\
-              -e JWT_REFRESH_SECRET_KEY=\$JWT_REFRESH_SECRET_KEY \\
-              -e DB_SERVER_URL=\$DB_SERVER_URL \\
-              -e DB_USER_ID=\$DB_USER_ID \\
-              -e DB_USER_PW=\$DB_USER_PW \\
+            docker run -d -p 8080:8080 \\
               yeseulhong/grass-diary:latest"
