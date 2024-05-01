@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - name: checking build
-        run: ls && pwd
+        run: ls
 
       - name: Docker build
         run: docker build -t yeseulhong/grass-diary:latest .
