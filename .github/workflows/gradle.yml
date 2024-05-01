@@ -51,6 +51,7 @@ jobs:
         run: docker push yeseulhong/grass-diary:latest
 
   deployEC2:
+      needs: docker-build
       runs-on: ubuntu-latest
       env:
         PRIVATE_KEY: ${{ secrets.CHZZK_AWS_PRIVATE_KEY }}
