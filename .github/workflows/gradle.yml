@@ -49,3 +49,25 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Push to Docker Hub
         run: docker push yeseulhong/grass-diary:latest
+
+  deployEC2:
+      runs-on: ubuntu-latest
+      env:
+        PRIVATE_KEY: ${{ secrets.CHZZK_AWS_PRIVATE_KEY }}
+        USER: ${{ secrets.EC2_USER }}
+        HOST: ${{ secrets.EC2_HOST }}
+
+      steps:
+      - name: deployEC2
+        run: |
+          echo "$PRIVATE_KEY" >> private_key.pem
+          chmod 400 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST "
+            CONTAINERS=\$(docker ps --filter \"publish=8080-8080\" -q);
+            
+            if [ ! -z \"\$CONTAINERS\" ]; then
+                docker stop \$CONTAINERS && docker rm \$CONTAINERS;
+            fi
+            
+            docker pull yeseulhong/grass-diary:latest;
+            docker run -d -p 8080:8080 yeseulhong/grass-diary:latest"
