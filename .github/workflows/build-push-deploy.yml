@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Build Gradle And Deploy to EC2 Instance
 
 on:
   push:
