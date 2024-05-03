@@ -292,10 +292,10 @@ public class DiaryService {
                 });
 
         DiaryLike diaryLike = DiaryLike.builder()
+                .diary(diary)
                 .member(member)
                 .build();
 
-        diary.addDiaryLike(diaryLike);
         diaryLikeRepository.save(diaryLike);
 
         // 추후 DTO로 return값 변경
@@ -310,7 +310,6 @@ public class DiaryService {
         DiaryLike diaryLike = diaryLikeRepository.findByDiaryIdAndMemberId(diaryId, memberId)
                 .orElseThrow(() -> new NotLikedException("해당 게시글에 좋아요를 누르지 않았습니다."));
 
-        diary.deleteDiaryLike(diaryLike);
         diaryLikeRepository.delete(diaryLike);
 
         // 추후 DTO로 return값 변경

@@ -125,5 +125,4 @@ public class DiaryController {
         ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
-  
 }

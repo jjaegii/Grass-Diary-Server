@@ -38,8 +38,7 @@ public class DiaryLike extends BaseCreatedTimeEntity {
     private Diary diary;
 
     @Builder
-    public DiaryLike(Long id, Member member, Diary diary) {
-        this.id = id;
+    public DiaryLike(Member member, Diary diary) {
         this.member = member;
         this.diary = diary;
     }
