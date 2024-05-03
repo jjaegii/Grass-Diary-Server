@@ -274,7 +274,8 @@ public class DiaryService {
 
         return new CountAndMonthGrassDTO(
                 allByMemberId.size(),
-                new GrassInfoDTO(thisMonthHistory, colorCode.getRgb())
+                new GrassInfoDTO(thisMonthHistory, colorCode.getRgb()),
+                thisMonthHistory.size()
         );
     }
 
