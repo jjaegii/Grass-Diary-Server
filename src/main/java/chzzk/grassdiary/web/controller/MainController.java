@@ -1,9 +1,7 @@
 package chzzk.grassdiary.web.controller;
 
-import chzzk.grassdiary.service.MainService;
 import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
-import chzzk.grassdiary.web.dto.main.TodayInfoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,15 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/main")
 @Tag(name = "메인 페이지에서 사용하는 컨트롤러")
 public class MainController {
-    private final MainService mainService;
     private final DiaryService diaryService;
-
-    @GetMapping("/todayInfo")
-    @Operation(summary = "오늘 정보", description = "date(String:`오늘은 MM월 dd일입니다.`), todayQuestion(String):`오늘의 질문`")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayInfoDTO.class)))
-    public ResponseEntity<?> todayInfo() {
-        return ResponseEntity.ok(mainService.getTodayInfo());
-    }
 
     @GetMapping("/grass/{memberId}")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = CountAndMonthGrassDTO.class)))
