@@ -94,7 +94,7 @@ public class DiaryController {
         return diaryService.deleteLike(diaryId, memberId);
     }
   
-    @GetMapping("/todayQuestion")
+    @GetMapping("/today-question")
     @Operation(summary = "오늘 정보 및 오늘의 질문")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayInfoDTO.class)))
     public ResponseEntity<?> findTodayQuestion() {
