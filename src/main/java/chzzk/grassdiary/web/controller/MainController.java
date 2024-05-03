@@ -3,6 +3,7 @@ package chzzk.grassdiary.web.controller;
 import chzzk.grassdiary.service.MainService;
 import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
+import chzzk.grassdiary.web.dto.main.TodayDateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +26,7 @@ public class MainController {
     private final DiaryService diaryService;
 
     @GetMapping("/today-date")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = CountAndMonthGrassDTO.class)))
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayDateDTO.class)))
     @Operation(
             summary = "오늘의 날짜 정보",
             description = "")
