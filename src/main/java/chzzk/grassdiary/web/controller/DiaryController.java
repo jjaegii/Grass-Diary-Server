@@ -3,6 +3,7 @@ package chzzk.grassdiary.web.controller;
 import chzzk.grassdiary.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.service.diary.DiaryService;
+import chzzk.grassdiary.service.diary.TodayQuestionService;
 import chzzk.grassdiary.web.dto.diary.DiaryDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
 import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "일기 컨트롤러")
 public class DiaryController {
     private final DiaryService diaryService;
+    private final TodayQuestionService todayQuestionService;
 
     @PostMapping("/{memberId}")
     public Long save(@PathVariable(name = "memberId") Long memberId, @RequestBody DiarySaveRequestDTO requestDto) {
@@ -80,7 +82,7 @@ public class DiaryController {
         return ResponseEntity.ok(diaryService.findAll(pageable, memberId));
     }
 
-    // 로그인 공부 후 memberId 부분을 auth로? 대체할 수 있는지 알아보기
+    // todo: 로그인 공부 후 memberId 부분을 auth로? 대체할 수 있는지 알아보기
     @PostMapping("/like/{diaryId}/{memberId}")
     public Long addLike(@PathVariable("diaryId") Long diaryId, @PathVariable("memberId") Long memberId) {
         return diaryService.addLike(diaryId, memberId);
@@ -90,7 +92,16 @@ public class DiaryController {
     public Long deleteLike(@PathVariable("diaryId") Long diaryId, @PathVariable("memberId") Long memberId) {
         return diaryService.deleteLike(diaryId, memberId);
     }
-
+  
+    @GetMapping("/todayQuestion")
+    @Operation(
+            summary = "오늘의 질문을 반환",
+            description = "매일 12시에 업데이트"
+    )
+    public ResponseEntity<?> findTodayQuestion() {
+        return ResponseEntity.ok(todayQuestionService.getTodayQuestion());
+    }
+  
     @ExceptionHandler
     public ResponseEntity<ErrorObject> handleException(MemberNotFoundException ex) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
