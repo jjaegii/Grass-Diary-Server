@@ -8,6 +8,7 @@ import chzzk.grassdiary.web.dto.diary.DiaryDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
 import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
 import chzzk.grassdiary.web.dto.diary.DiaryUpdateRequestDTO;
+import chzzk.grassdiary.web.dto.main.TodayInfoDTO;
 import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
 import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
 import chzzk.grassdiary.web.exceptions.ErrorObject;
@@ -94,10 +95,8 @@ public class DiaryController {
     }
   
     @GetMapping("/todayQuestion")
-    @Operation(
-            summary = "오늘의 질문을 반환",
-            description = "매일 12시에 업데이트"
-    )
+    @Operation(summary = "오늘 정보 및 오늘의 질문")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayInfoDTO.class)))
     public ResponseEntity<?> findTodayQuestion() {
         return ResponseEntity.ok(todayQuestionService.getTodayQuestion());
     }
