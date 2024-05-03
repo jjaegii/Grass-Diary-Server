@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 import static chzzk.grassdiary.domain.diary.question.QuestionPrompt.getRandomQuestion;
 
@@ -29,14 +31,18 @@ public class TodayQuestionService {
     @Transactional(readOnly = true)
     public TodayInfoDTO getTodayQuestion() {
         LocalDate today = LocalDate.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("오늘은 M월 d일입니다.");
-        String todayDate = today.format(dateTimeFormatter);
 
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
         TodayQuestion todayQuestion = todayQuestionRepository.findByCreatedAtBetween(startOfDay, endOfDay);
 
-        return new TodayInfoDTO(todayDate, todayQuestion.getQuestionPrompt().getQuestion());
+        return new TodayInfoDTO(
+                today.getYear(),
+                today.getMonthValue(),
+                today.getDayOfMonth(),
+                today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN),
+                todayQuestion.getQuestionPrompt().getQuestion()
+        );
     }
 }
