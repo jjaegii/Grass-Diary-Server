@@ -4,10 +4,7 @@ import chzzk.grassdiary.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.service.diary.TodayQuestionService;
-import chzzk.grassdiary.web.dto.diary.DiaryDTO;
-import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
-import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
-import chzzk.grassdiary.web.dto.diary.DiaryUpdateRequestDTO;
+import chzzk.grassdiary.web.dto.diary.*;
 import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
 import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
 import chzzk.grassdiary.web.exceptions.ErrorObject;
@@ -93,11 +90,9 @@ public class DiaryController {
         return diaryService.deleteLike(diaryId, memberId);
     }
   
-    @GetMapping("/todayQuestion")
-    @Operation(
-            summary = "오늘의 질문을 반환",
-            description = "매일 12시에 업데이트"
-    )
+    @GetMapping("/today-question")
+    @Operation(summary = "오늘의 질문")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayQuestionDTO.class)))
     public ResponseEntity<?> findTodayQuestion() {
         return ResponseEntity.ok(todayQuestionService.getTodayQuestion());
     }

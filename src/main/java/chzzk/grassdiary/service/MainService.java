@@ -1,25 +1,26 @@
 package chzzk.grassdiary.service;
 
-import static chzzk.grassdiary.domain.diary.question.QuestionPrompt.getRandomQuestion;
-
-import chzzk.grassdiary.domain.diary.question.QuestionPrompt;
-import chzzk.grassdiary.web.dto.main.TodayInfoDTO;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import chzzk.grassdiary.web.dto.main.TodayDateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class MainService {
-
-    public TodayInfoDTO getTodayInfo() {
+    public TodayDateDTO getTodayDate() {
         LocalDate today = LocalDate.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("오늘은 M월 d일입니다.");
-        String todayDate = today.format(dateTimeFormatter);
 
-        QuestionPrompt todayQuestion = getRandomQuestion();
-
-        return new TodayInfoDTO(todayDate, "fix");
+        return new TodayDateDTO(
+                today.getYear(),
+                today.getMonthValue(),
+                today.getDayOfMonth(),
+                today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN)
+        );
     }
 }

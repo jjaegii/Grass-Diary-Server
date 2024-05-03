@@ -3,7 +3,7 @@ package chzzk.grassdiary.web.controller;
 import chzzk.grassdiary.service.MainService;
 import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
-import chzzk.grassdiary.web.dto.main.TodayInfoDTO;
+import chzzk.grassdiary.web.dto.main.TodayDateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,18 +25,20 @@ public class MainController {
     private final MainService mainService;
     private final DiaryService diaryService;
 
-    @GetMapping("/todayInfo")
-    @Operation(summary = "오늘 정보", description = "date(String:`오늘은 MM월 dd일입니다.`), todayQuestion(String):`오늘의 질문`")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayInfoDTO.class)))
-    public ResponseEntity<?> todayInfo() {
-        return ResponseEntity.ok(mainService.getTodayInfo());
+    @GetMapping("/today-date")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = TodayDateDTO.class)))
+    @Operation(
+            summary = "오늘의 날짜 정보",
+            description = "")
+    public ResponseEntity<?> getTodayDate() {
+        return ResponseEntity.ok(mainService.getTodayDate());
     }
 
     @GetMapping("/grass/{memberId}")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = CountAndMonthGrassDTO.class)))
     @Operation(
             summary = "사용자의 현재 총 일기 개수, 이번 달 잔디 기록",
-            description = "사용자의 현재까지의 총 잔디(일기) 개수, 이번달 잔디 기록")
+            description = "사용자의 현재까지의 총 잔디(일기) 개수, 이번달 잔디 기록, 이번달 잔디 개수")
     @Parameter(name = "memberId", description = "멤버 아이디")
     public ResponseEntity<?> getGrassCountAndMonthGrass(@PathVariable Long memberId) {
         return ResponseEntity.ok(diaryService.countAllAndMonthGrass(memberId));

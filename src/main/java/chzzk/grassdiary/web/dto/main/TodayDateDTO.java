@@ -1,10 +1,9 @@
 package chzzk.grassdiary.web.dto.main;
 
-public record TodayInfoDTO(
+public record TodayDateDTO(
         int year,
         int month,
         int date,
-        String day,
-        String todayQuestion
+        String day
 ) {
 }
