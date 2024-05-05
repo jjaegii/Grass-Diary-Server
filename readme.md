@@ -8,21 +8,14 @@
 
 일상의 작은 기록들이 잔디처럼 자라나 큰 성장으로 이어져요
 
-### `Released` https://grassdiary.site/
+배포 사이트: https://grassdiary.site/
 
-<img src="./src/main/resources/static/start_page.jpg">
+<img src="./images/start_page.jpg">
 
-## 🛠️ Tech stack
-<br>
-<img src="https://skillicons.dev/icons?i=java,spring,mysql&perline=" alt=""/>
-<br>
-<img src="https://skillicons.dev/icons?i=aws,docker,githubactions&perline=" alt=""/>
-<br>
 
 ## 🛠 Architecture
 
-
-
+<img src="./images/architecture.png">
 
 
 ## 💁 Developers
@@ -32,29 +25,27 @@
 <th colspan="3">Backend</th>
 <th>DevOps</th>
 <tr>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/106158901?v=4" width="100" /></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/97906653?v=4" width="100" /></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/102516350?v=4" width="100" /></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/50395809?v=4" width=100px alt="홍예슬"/></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/107929019?v=4" width=100px alt="최휘준"/></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/79985186?v=4" width=100px alt="so0"/></td>
-    <td align="center"><img src="https://avatars.githubusercontent.com/u/77189999?v=4" width=100px alt="jjaegii"/></td>
+    <td><img src="https://avatars.githubusercontent.com/u/106158901?v=4" width="100" /></td>
+    <td><img src="https://avatars.githubusercontent.com/u/97906653?v=4" width="100" /></td>
+    <td><img src="https://avatars.githubusercontent.com/u/102516350?v=4" width="100" /></td>
+    <td><img src="https://avatars.githubusercontent.com/u/50395809?v=4" width=100px alt="홍예슬"/></td>
+    <td><img src="https://avatars.githubusercontent.com/u/107929019?v=4" width=100px alt="최휘준"/></td>
+    <td><img src="https://avatars.githubusercontent.com/u/79985186?v=4" width=100px alt="so0"/></td>
+    <td><img src="https://avatars.githubusercontent.com/u/77189999?v=4" width=100px alt="jjaegii"/></td>
 </tr>
 <tr>
-    <td align="center"><a href="https://github.com/ccconac">@ccconac</a></td>
-    <td align="center"><a href="https://github.com/rkdcodus">@rkdcodus</a></td>
-    <td align="center"><a href="https://github.com/KKYHH">@KKYHH</a></td>
-    <td align="center"><a href="https://github.com/HongYeseul">@HongYeseul</a></td>
-    <td align="center"><a href="https://github.com/chjcode">@chjcode</a></td>
-    <td align="center"><a href="https://github.com/minisyu">@minisyu</a></td>
-    <td align="center"><a href="https://github.com/jjaegii">@jjaegii</a></td>
+    <td><a href="https://github.com/ccconac">@ccconac</a></td>
+    <td><a href="https://github.com/rkdcodus">@rkdcodus</a></td>
+    <td><a href="https://github.com/KKYHH">@KKYHH</a></td>
+    <td><a href="https://github.com/HongYeseul">@HongYeseul</a></td>
+    <td><a href="https://github.com/chjcode">@chjcode</a></td>
+    <td><a href="https://github.com/minisyu">@minisyu</a></td>
+    <td><a href="https://github.com/jjaegii">@jjaegii</a></td>
 </tr>
 
 </table>
 
 ## ✔️️ etc...
-
-</details>
 
 <details>
     <summary>
