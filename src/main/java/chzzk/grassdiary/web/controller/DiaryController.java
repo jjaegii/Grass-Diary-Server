@@ -6,6 +6,7 @@ import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.service.diary.TodayQuestionService;
 import chzzk.grassdiary.web.dto.diary.*;
 import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
+import chzzk.grassdiary.web.exceptions.DiaryEditDateMismatchException;
 import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
 import chzzk.grassdiary.web.exceptions.ErrorObject;
 import chzzk.grassdiary.web.exceptions.MemberNotFoundException;
@@ -120,4 +121,11 @@ public class DiaryController {
         ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleException(DiaryEditDateMismatchException ex) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
+    }
+
 }

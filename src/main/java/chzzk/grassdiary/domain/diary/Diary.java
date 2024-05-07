@@ -76,4 +76,8 @@ public class Diary extends BaseTimeEntity {
         this.hasTag = hasTag;
         this.conditionLevel = conditionLevel;
     }
+
+    public LocalDateTime getCreatedAt() {
+        return super.getCreatedAt();
+    }
 }
