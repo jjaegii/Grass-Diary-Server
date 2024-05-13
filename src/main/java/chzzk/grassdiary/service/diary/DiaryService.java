@@ -138,8 +138,8 @@ public class DiaryService {
             }
         }
 
-        Boolean originalHasImage = diary.getHasImage();
-        Boolean currentHasImage = requestDto.getHasImage();
+        boolean originalHasImage = diary.getHasImage() != null && diary.getHasImage();
+        boolean currentHasImage = requestDto.getHasImage();
         String imagePath = "";
         if (currentHasImage) {
             imagePath = diaryImageService.updateImage(
@@ -208,7 +208,7 @@ public class DiaryService {
         }
 
         // 이미지 삭제
-        if (diary.getHasImage()) {
+        if (diary.getHasImage() != null && diary.getHasImage()) {
             diaryImageService.deleteImage(diary);
         }
 
@@ -228,7 +228,7 @@ public class DiaryService {
 
         boolean isLiked = diaryLikeRepository.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
 
-        if (diary.getHasImage()) {
+        if (diary.getHasImage() != null && diary.getHasImage()) {
             return new DiaryResponseDTO(diary, tags, isLiked, diaryImageService.getImageURL(diary));
         }
         return new DiaryResponseDTO(diary, tags, isLiked, "");

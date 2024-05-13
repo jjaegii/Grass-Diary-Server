@@ -27,7 +27,7 @@ public class DiaryResponseDTO {
         this.memberId = diary.getMember().getId();
         this.content = diary.getContent();
         this.isPrivate = diary.getIsPrivate();
-        this.hasImage = diary.getHasImage();
+        this.hasImage = diary.getHasImage() != null && diary.getHasImage();
         this.imageURL = imageURL;
         this.hasTag = diary.getHasTag();
         this.createdDate = diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일"));
