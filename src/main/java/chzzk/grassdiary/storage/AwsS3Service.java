@@ -69,11 +69,6 @@ public class AwsS3Service implements StorageService {
     }
 
     @Override
-    public String getFileFolder(FileFolder fileFolder) {
-        return fileFolder.getDirectoryPath();
-    }
-
-    @Override
     public void deleteImage(String fileName) {
         s3Client.deleteObject(new DeleteObjectRequest(awsProperties.getBucket(), fileName));
     }
