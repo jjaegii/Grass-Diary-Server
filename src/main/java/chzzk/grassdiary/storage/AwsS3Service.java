@@ -1,6 +1,7 @@
 package chzzk.grassdiary.storage;
 
 import chzzk.grassdiary.exception.file.ImageRoadFailedException;
+import chzzk.grassdiary.utils.file.FileFolder;
 import chzzk.grassdiary.utils.file.FileNameUtils;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -8,6 +9,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.annotation.PostConstruct;
@@ -36,14 +38,14 @@ public class AwsS3Service implements StorageService {
                 .build();
     }
 
-    public String uploadBucket(MultipartFile file) {
-        return upload(file, awsProperties.getBucket());
+    public String uploadBucket(MultipartFile file, FileFolder category) {
+        return uploadImage(file, awsProperties.getBucket(), category);
     }
 
     @Override
-    public String upload(MultipartFile file, String bucket) {
+    public String uploadImage(MultipartFile file, String bucket, FileFolder category) {
         String fileName = file.getOriginalFilename();
-        String convertedFileName = FileNameUtils.fileNameConvert(fileName);
+        String convertedFileName = category.getDirectoryPath() + FileNameUtils.fileNameConvert(fileName);
 
         try {
             String mimeType = new Tika().detect(file.getInputStream());
@@ -63,6 +65,16 @@ public class AwsS3Service implements StorageService {
             throw new ImageRoadFailedException();
         }
 
-        return s3Client.getUrl(bucket, convertedFileName).toString();
+        return convertedFileName;
+    }
+
+    @Override
+    public String getFileFolder(FileFolder fileFolder) {
+        return fileFolder.getDirectoryPath();
+    }
+
+    @Override
+    public void deleteImage(String fileName) {
+        s3Client.deleteObject(new DeleteObjectRequest(awsProperties.getBucket(), fileName));
     }
 }
