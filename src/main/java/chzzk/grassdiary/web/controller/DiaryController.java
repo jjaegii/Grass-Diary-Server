@@ -5,11 +5,11 @@ import chzzk.grassdiary.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.service.diary.DiaryService;
 import chzzk.grassdiary.service.diary.TodayQuestionService;
 import chzzk.grassdiary.web.dto.diary.*;
-import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
-import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
-import chzzk.grassdiary.web.exceptions.ErrorObject;
-import chzzk.grassdiary.web.exceptions.MemberNotFoundException;
-import chzzk.grassdiary.web.exceptions.NotLikedException;
+import chzzk.grassdiary.global.error.exception.AlreadyLikedException;
+import chzzk.grassdiary.global.error.exception.DiaryNotFoundException;
+import chzzk.grassdiary.global.error.exception.ErrorObject;
+import chzzk.grassdiary.global.error.exception.MemberNotFoundException;
+import chzzk.grassdiary.global.error.exception.NotLikedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,15 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,13 +33,21 @@ public class DiaryController {
     private final TodayQuestionService todayQuestionService;
 
     @PostMapping("/{memberId}")
-    public Long save(@PathVariable(name = "memberId") Long memberId, @RequestBody DiarySaveRequestDTO requestDto) {
-        return diaryService.save(memberId, requestDto);
+    public DiarySaveResponseDTO save(
+            @PathVariable(name = "memberId") Long memberId,
+            @RequestPart DiarySaveRequestDTO requestDto,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        return diaryService.save(memberId, requestDto, image);
     }
 
     @PatchMapping("/{diaryId}")
-    public Long update(@PathVariable(name = "diaryId") Long diaryId, @RequestBody DiaryUpdateRequestDTO requestDto) {
-        return diaryService.update(diaryId, requestDto);
+    public DiarySaveResponseDTO update(
+            @PathVariable(name = "diaryId") Long diaryId,
+            @RequestPart DiaryUpdateRequestDTO requestDto,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        return diaryService.update(diaryId, requestDto, image);
     }
 
     @DeleteMapping("/{diaryId}")
