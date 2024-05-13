@@ -13,6 +13,7 @@ public class DiaryResponseDTO {
     private final String content;
     private final Boolean isPrivate;
     private final Boolean hasImage;
+    private final String imageURL;
     private final Boolean hasTag;
     private final String createdDate;
     private final String createdAt;
@@ -21,12 +22,13 @@ public class DiaryResponseDTO {
     private final Integer likeCount;
     private final boolean isLikedByLogInMember;
 
-    public DiaryResponseDTO(Diary diary, List<TagList> tags, boolean isLikedByLogInMember) {
+    public DiaryResponseDTO(Diary diary, List<TagList> tags, boolean isLikedByLogInMember, String imageURL) {
         this.id = diary.getId();
         this.memberId = diary.getMember().getId();
         this.content = diary.getContent();
         this.isPrivate = diary.getIsPrivate();
         this.hasImage = diary.getHasImage();
+        this.imageURL = imageURL;
         this.hasTag = diary.getHasTag();
         this.createdDate = diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일"));
         this.createdAt = diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"));
