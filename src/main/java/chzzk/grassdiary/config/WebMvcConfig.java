@@ -1,24 +1,15 @@
 package chzzk.grassdiary.config;
 
 import chzzk.grassdiary.auth.common.AuthMemberResolver;
-import chzzk.grassdiary.auth.exception.AuthenticationException;
 import chzzk.grassdiary.auth.filter.JwtAuthFilter;
-import chzzk.grassdiary.auth.jwt.JwtTokenExtractor;
-import chzzk.grassdiary.auth.jwt.JwtTokenProvider;
-import chzzk.grassdiary.domain.member.Member;
-import chzzk.grassdiary.domain.member.MemberRepository;
-import com.amazonaws.HttpMethod;
 import jakarta.servlet.Filter;
 import java.util.List;
-import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -53,28 +44,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
         );
         return registration;
     }
-
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOriginPatterns("*")
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowedHeaders("*")
-//                .allowCredentials(true);
-//    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
-                        .allowedHeaders("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH")
-                        .exposedHeaders("Authorization", "RefreshToken");
-            }
-        };
-    }
-
 }
