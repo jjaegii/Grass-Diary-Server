@@ -17,16 +17,13 @@ import chzzk.grassdiary.domain.member.MemberRepository;
 import chzzk.grassdiary.domain.reward.RewardHistory;
 import chzzk.grassdiary.domain.reward.RewardHistoryRepository;
 import chzzk.grassdiary.domain.reward.RewardType;
-import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
-import chzzk.grassdiary.web.dto.diary.DiaryDTO;
-import chzzk.grassdiary.web.dto.diary.DiaryResponseDTO;
-import chzzk.grassdiary.web.dto.diary.DiarySaveRequestDTO;
-import chzzk.grassdiary.web.dto.diary.DiaryUpdateRequestDTO;
+import chzzk.grassdiary.utils.file.FileFolder;
+import chzzk.grassdiary.web.dto.diary.*;
 import chzzk.grassdiary.web.dto.member.GrassInfoDTO;
-import chzzk.grassdiary.web.exceptions.AlreadyLikedException;
-import chzzk.grassdiary.web.exceptions.DiaryNotFoundException;
-import chzzk.grassdiary.web.exceptions.MemberNotFoundException;
-import chzzk.grassdiary.web.exceptions.NotLikedException;
+import chzzk.grassdiary.global.error.exception.AlreadyLikedException;
+import chzzk.grassdiary.global.error.exception.DiaryNotFoundException;
+import chzzk.grassdiary.global.error.exception.MemberNotFoundException;
+import chzzk.grassdiary.global.error.exception.NotLikedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -47,15 +45,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final DiaryLikeRepository diaryLikeRepository;
-    private final DiaryImageRepository diaryImageRepository;
     private final TagListRepository tagListRepository;
     private final MemberTagsRepository memberTagsRepository;
     private final MemberRepository memberRepository;
     private final DiaryTagRepository diaryTagRepository;
     private final RewardHistoryRepository rewardHistoryRepository;
 
+    private final DiaryImageService diaryImageService;
+
     @Transactional
-    public Long save(Long id, DiarySaveRequestDTO requestDto) {
+    public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto, MultipartFile image) {
+        // TODO: 기능별 메서드 분리
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
 
@@ -84,11 +84,16 @@ public class DiaryService {
         if (rewardHistory.getId() == null) {
             throw new IllegalArgumentException("일기 히스토리 저장 오류");
         }
-        return diary.getId();
+
+        if (requestDto.getHasImage()) {
+            String imagePath = diaryImageService.uploadDiaryImage(image, FileFolder.PERSONAL_DIARY, diary);
+            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
+        }
+        return new DiarySaveResponseDTO(diary.getId(), false, "");
     }
 
     @Transactional
-    public Long update(Long id, DiaryUpdateRequestDTO requestDto) {
+    public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto, MultipartFile image) {
         Diary diary = diaryRepository.findById(id)
                 .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
         // 기존 diaryTag, memberTags, tagList 찾기
@@ -133,11 +138,29 @@ public class DiaryService {
             }
         }
 
+        boolean originalHasImage = diary.getHasImage() != null && diary.getHasImage();
+        boolean currentHasImage = requestDto.getHasImage();
+        String imagePath = "";
+        if (currentHasImage) {
+            imagePath = diaryImageService.updateImage(
+                    originalHasImage,
+                    image,
+                    FileFolder.PERSONAL_DIARY,
+                    diary);
+        }
+        if (originalHasImage && !currentHasImage) {
+            diaryImageService.deleteImage(diary);
+        }
+
         // diary update 적용
         diary.update(requestDto.getContent(), requestDto.getIsPrivate(), requestDto.getHasImage(),
                 requestDto.getHasTag(), requestDto.getConditionLevel());
 
-        return id;
+        if (currentHasImage) {
+            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
+        }
+        return new DiarySaveResponseDTO(diary.getId(), false, "");
+
     }
 
     @Transactional
@@ -184,6 +207,11 @@ public class DiaryService {
             diaryLikeRepository.delete(diaryLike);
         }
 
+        // 이미지 삭제
+        if (diary.getHasImage() != null && diary.getHasImage()) {
+            diaryImageService.deleteImage(diary);
+        }
+
         diaryRepository.delete(diary);
     }
 
@@ -191,7 +219,7 @@ public class DiaryService {
     public DiaryResponseDTO findById(Long diaryId, Long logInMemberId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
-        //조회한 결과를 담은 DTO 객체를 생성해서 반환
+
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
         List<TagList> tags = new ArrayList<>();
         for (DiaryTag diaryTag : diaryTags) {
@@ -200,7 +228,10 @@ public class DiaryService {
 
         boolean isLiked = diaryLikeRepository.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
 
-        return new DiaryResponseDTO(diary, tags, isLiked);
+        if (diary.getHasImage() != null && diary.getHasImage()) {
+            return new DiaryResponseDTO(diary, tags, isLiked, diaryImageService.getImageURL(diary));
+        }
+        return new DiaryResponseDTO(diary, tags, isLiked, "");
     }
 
     @Transactional(readOnly = true)
