@@ -1,10 +1,18 @@
 package chzzk.grassdiary.config;
 
 import chzzk.grassdiary.auth.common.AuthMemberResolver;
+import chzzk.grassdiary.auth.exception.AuthenticationException;
 import chzzk.grassdiary.auth.filter.JwtAuthFilter;
+import chzzk.grassdiary.auth.jwt.JwtTokenExtractor;
+import chzzk.grassdiary.auth.jwt.JwtTokenProvider;
+import chzzk.grassdiary.domain.member.Member;
+import chzzk.grassdiary.domain.member.MemberRepository;
 import com.amazonaws.HttpMethod;
 import jakarta.servlet.Filter;
 import java.util.List;
+import java.util.Optional;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -49,14 +57,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods(
-                        HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.PUT.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.PATCH.name())
-                .allowCredentials(false)
-                .maxAge(3600);
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
