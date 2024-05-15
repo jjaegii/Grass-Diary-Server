@@ -26,6 +26,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Allow-Headers",
+                "authorization, content-type, accept, origin, x-requested-with");
+        response.setHeader("Access-Control-Allow-Origin", "https://grassdiary.site");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+
         if (!request.getMethod().equals("OPTIONS")) {
             String accessToken = jwtTokenExtractor.extractAccessToken(request);
             Long id = jwtTokenProvider.extractIdFromAccessToken(accessToken);
