@@ -2,6 +2,7 @@ package chzzk.grassdiary.config;
 
 import chzzk.grassdiary.auth.common.AuthMemberResolver;
 import chzzk.grassdiary.auth.filter.JwtAuthFilter;
+import com.amazonaws.HttpMethod;
 import jakarta.servlet.Filter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -42,5 +44,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "/api/me"
         );
         return registration;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods(
+                        HttpMethod.GET.name(),
+                        HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name(),
+                        HttpMethod.PATCH.name())
+                .allowCredentials(false)
+                .maxAge(3600);
     }
 }
