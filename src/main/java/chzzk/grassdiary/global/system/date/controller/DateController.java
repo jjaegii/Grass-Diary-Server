@@ -1,7 +1,7 @@
-package chzzk.grassdiary.global.common.date.controller;
+package chzzk.grassdiary.global.system.date.controller;
 
 import chzzk.grassdiary.global.util.date.DateUtil;
-import chzzk.grassdiary.global.common.date.dto.TodayDateDTO;
+import chzzk.grassdiary.global.system.date.dto.TodayDateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

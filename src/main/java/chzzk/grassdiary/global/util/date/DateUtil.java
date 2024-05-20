@@ -1,6 +1,6 @@
 package chzzk.grassdiary.global.util.date;
 
-import chzzk.grassdiary.global.common.date.dto.TodayDateDTO;
+import chzzk.grassdiary.global.system.date.dto.TodayDateDTO;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;

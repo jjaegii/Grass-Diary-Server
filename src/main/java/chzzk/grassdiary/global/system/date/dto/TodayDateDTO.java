@@ -1,4 +1,4 @@
-package chzzk.grassdiary.global.common.date.dto;
+package chzzk.grassdiary.global.system.date.dto;
 
 public record TodayDateDTO(
         int year,
