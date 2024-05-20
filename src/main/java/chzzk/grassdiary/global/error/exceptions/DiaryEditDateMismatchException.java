@@ -1,4 +1,4 @@
-package chzzk.grassdiary.global.exceptions;
+package chzzk.grassdiary.global.error.exceptions;
 
 public class DiaryEditDateMismatchException extends RuntimeException {
     public DiaryEditDateMismatchException() {
