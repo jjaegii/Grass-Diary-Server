@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,5 +27,15 @@ public class DiaryImage {
     private Diary diary;
 
     @Lob
-    private String diaryImageUrl;
+    private String imagePath;
+
+    @Builder
+    public DiaryImage(Diary diary, String imagePath) {
+        this.diary = diary;
+        this.imagePath = imagePath;
+    }
+
+    public void updateImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 }

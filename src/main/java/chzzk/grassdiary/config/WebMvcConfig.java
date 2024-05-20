@@ -4,6 +4,7 @@ import chzzk.grassdiary.auth.common.AuthMemberResolver;
 import chzzk.grassdiary.auth.filter.JwtAuthFilter;
 import jakarta.servlet.Filter;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
