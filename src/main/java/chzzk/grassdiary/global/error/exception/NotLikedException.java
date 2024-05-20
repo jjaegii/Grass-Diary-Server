@@ -1,4 +1,4 @@
-package chzzk.grassdiary.global.error.exceptions;
+package chzzk.grassdiary.global.error.exception;
 
 public class NotLikedException extends RuntimeException {
     public NotLikedException() {
