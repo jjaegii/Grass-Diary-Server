@@ -21,6 +21,7 @@ import chzzk.grassdiary.utils.file.FileFolder;
 import chzzk.grassdiary.web.dto.diary.*;
 import chzzk.grassdiary.web.dto.member.GrassInfoDTO;
 import chzzk.grassdiary.global.error.exception.AlreadyLikedException;
+import chzzk.grassdiary.global.error.exception.DiaryEditDateMismatchException;
 import chzzk.grassdiary.global.error.exception.DiaryNotFoundException;
 import chzzk.grassdiary.global.error.exception.MemberNotFoundException;
 import chzzk.grassdiary.global.error.exception.NotLikedException;
@@ -96,6 +97,17 @@ public class DiaryService {
     public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto, MultipartFile image) {
         Diary diary = diaryRepository.findById(id)
                 .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
+
+        // update 가능 시간 체크
+        LocalDate createdAt = diary.getCreatedAt().toLocalDate();
+
+        LocalDate today = LocalDateTime.now().toLocalDate();
+        if (!createdAt.equals(today)) {
+            throw new DiaryEditDateMismatchException(
+                    "일기를 수정 가능한 날짜가 아닙니다. createdAt = " + createdAt + ", today = " + today
+            );
+        }
+
         // 기존 diaryTag, memberTags, tagList 찾기
         List<DiaryTag> diaryTags = diaryTagRepository.findAllByDiaryId(diary.getId());
         List<MemberTags> memberTags = new ArrayList<>();
