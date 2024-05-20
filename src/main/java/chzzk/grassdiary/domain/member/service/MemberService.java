@@ -1,8 +1,8 @@
 package chzzk.grassdiary.domain.member.service;
 
 import chzzk.grassdiary.global.auth.service.dto.GoogleUserInfo;
-import chzzk.grassdiary.domain.member.entity.color.ColorCode;
-import chzzk.grassdiary.domain.member.entity.color.ColorCodeDAO;
+import chzzk.grassdiary.domain.color.ColorCode;
+import chzzk.grassdiary.domain.color.ColorCodeDAO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import java.util.Optional;

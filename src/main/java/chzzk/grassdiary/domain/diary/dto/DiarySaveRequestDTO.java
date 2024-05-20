@@ -1,6 +1,6 @@
 package chzzk.grassdiary.domain.diary.dto;
 
-import chzzk.grassdiary.domain.member.entity.color.ConditionLevel;
+import chzzk.grassdiary.domain.color.ConditionLevel;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import chzzk.grassdiary.domain.member.entity.Member;
 import java.util.List;

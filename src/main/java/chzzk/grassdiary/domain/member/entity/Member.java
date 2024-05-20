@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.member.entity;
 
 import chzzk.grassdiary.domain.base.BaseTimeEntity;
-import chzzk.grassdiary.domain.member.entity.color.ColorCode;
+import chzzk.grassdiary.domain.color.ColorCode;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

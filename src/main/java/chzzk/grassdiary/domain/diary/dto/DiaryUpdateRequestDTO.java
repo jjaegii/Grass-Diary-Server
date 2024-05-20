@@ -1,6 +1,6 @@
 package chzzk.grassdiary.domain.diary.dto;
 
-import chzzk.grassdiary.domain.member.entity.color.ConditionLevel;
+import chzzk.grassdiary.domain.color.ConditionLevel;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

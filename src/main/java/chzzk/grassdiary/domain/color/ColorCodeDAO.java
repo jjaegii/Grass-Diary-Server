@@ -1,4 +1,4 @@
-package chzzk.grassdiary.domain.member.entity.color;
+package chzzk.grassdiary.domain.color;
 
 import java.util.Optional;
 
