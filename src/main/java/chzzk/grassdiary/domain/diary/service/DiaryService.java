@@ -226,7 +226,7 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public DiaryResponseDTO findById(Long diaryId, Long logInMemberId) {
+    public DiaryDTO findById(Long diaryId, Long logInMemberId) {
         Diary diary = diaryDAO.findById(diaryId)
                 .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
 
@@ -239,13 +239,13 @@ public class DiaryService {
         boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
 
         if (diary.getHasImage() != null && diary.getHasImage()) {
-            return new DiaryResponseDTO(diary, tags, isLiked, diaryImageService.getImageURL(diary));
+            return DiaryDTO.from(diary, tags, isLiked, diaryImageService.getImageURL(diary));
         }
-        return new DiaryResponseDTO(diary, tags, isLiked, "");
+        return DiaryDTO.from(diary, tags, isLiked, "");
     }
 
     @Transactional(readOnly = true)
-    public Page<DiaryDTO> findAll(Pageable pageable, Long memberId) {
+    public Page<DiaryDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
         Member member = memberDAO.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
 
@@ -255,12 +255,21 @@ public class DiaryService {
                     List<TagList> tags = diaryTags.stream()
                             .map(MemberTags::getTagList)
                             .toList();
-                    return DiaryDTO.from(diary, tags);
+                    String imageURL = getImageURL(diary);
+                    boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
+                    return DiaryDTO.from(diary, tags, isLiked, imageURL);
                 });
     }
 
+    private String getImageURL(Diary diary) {
+        if (diary.getHasImage() != null && diary.getHasImage()) {
+            return diaryImageService.getImageURL(diary);
+        }
+        return "";
+    }
+
     @Transactional(readOnly = true)
-    public DiaryDTO findByDate(Long id, String date) {
+    public DiaryDTO findByDate(Long id, String date, Long logInMemberId) {
 
         LocalDate localDate = LocalDate.parse(date);
 
@@ -282,15 +291,14 @@ public class DiaryService {
                 .map(MemberTags::getTagList)
                 .toList();
 
-        return new DiaryDTO(
-                diary.getId(),
-                diary.getContent(),
+        boolean isLikedByLogInMember = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
+
+        return DiaryDTO.from(
+                diary,
                 tags,
-                diary.getConditionLevel().getTransparency(),
-                diary.getIsPrivate(),
-                diary.getDiaryLikes().size(),
-                diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
-                diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+                isLikedByLogInMember,
+                getImageURL(diary)
+        );
     }
 
     @Transactional
