@@ -238,10 +238,7 @@ public class DiaryService {
 
         boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
 
-        if (diary.getHasImage() != null && diary.getHasImage()) {
-            return DiaryDTO.from(diary, tags, isLiked, diaryImageService.getImageURL(diary));
-        }
-        return DiaryDTO.from(diary, tags, isLiked, "");
+        return DiaryDTO.from(diary, tags, isLiked, getImageURL(diary.getHasImage(), diary.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -255,17 +252,10 @@ public class DiaryService {
                     List<TagList> tags = diaryTags.stream()
                             .map(MemberTags::getTagList)
                             .toList();
-                    String imageURL = getImageURL(diary);
+                    String imageURL = getImageURL(diary.getHasImage(), diary.getId());
                     boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
                     return DiaryDTO.from(diary, tags, isLiked, imageURL);
                 });
-    }
-
-    private String getImageURL(Diary diary) {
-        if (diary.getHasImage() != null && diary.getHasImage()) {
-            return diaryImageService.getImageURL(diary);
-        }
-        return "";
     }
 
     @Transactional(readOnly = true)
@@ -297,7 +287,7 @@ public class DiaryService {
                 diary,
                 tags,
                 isLikedByLogInMember,
-                getImageURL(diary)
+                getImageURL(diary.getHasImage(), diary.getId())
         );
     }
 
@@ -337,5 +327,12 @@ public class DiaryService {
 
         // 추후 DTO로 return값 변경
         return diaryId;
+    }
+
+    private String getImageURL(Boolean hasImage, Long diaryId) {
+        if (hasImage != null && hasImage) {
+            return diaryImageService.getImageURL(diaryId);
+        }
+        return "";
     }
 }
