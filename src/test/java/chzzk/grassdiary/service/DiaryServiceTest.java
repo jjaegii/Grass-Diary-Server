@@ -2,19 +2,19 @@
 //
 //import static org.assertj.core.api.Assertions.assertThat;
 //
-//import chzzk.grassdiary.domain.color.ColorCode;
-//import chzzk.grassdiary.domain.color.ColorCodeRepository;
-//import chzzk.grassdiary.domain.color.ConditionLevel;
-//import chzzk.grassdiary.domain.diary.Diary;
-//import chzzk.grassdiary.domain.diary.DiaryRepository;
+//import chzzk.grassdiary.domain.member.entity.color.ColorCode;
+//import chzzk.grassdiary.domain.member.entity.color.ColorCodeRepository;
+//import chzzk.grassdiary.domain.member.entity.color.ConditionLevel;
+//import chzzk.grassdiary.domain.diary.entity.Diary;
+//import chzzk.grassdiary.domain.diary.entity.dao.DiaryRepository;
 //import chzzk.grassdiary.domain.diary.tag.DiaryTagRepository;
 //import chzzk.grassdiary.domain.diary.tag.MemberTagsRepository;
 //import chzzk.grassdiary.domain.diary.tag.TagListRepository;
-//import chzzk.grassdiary.domain.member.Member;
-//import chzzk.grassdiary.domain.member.MemberRepository;
-//import chzzk.grassdiary.service.diary.DiaryService;
-//import chzzk.grassdiary.web.dto.diary.CountAndMonthGrassDTO;
-//import chzzk.grassdiary.web.dto.diary.DiaryDTO;
+//import chzzk.grassdiary.domain.member.entity.Member;
+//import chzzk.grassdiary.domain.member.entity.MemberRepository;
+//import chzzk.grassdiary.domain.diary.service.DiaryService;
+//import chzzk.grassdiary.domain.diary.dto.CountAndMonthGrassDTO;
+//import chzzk.grassdiary.domain.diary.dto.DiaryDTO;
 //import java.time.LocalDate;
 //import java.time.format.DateTimeFormatter;
 //import java.util.ArrayList;

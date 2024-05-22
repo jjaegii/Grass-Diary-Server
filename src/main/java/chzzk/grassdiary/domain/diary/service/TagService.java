@@ -1,0 +1,52 @@
+package chzzk.grassdiary.domain.diary.service;
+
+import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.domain.diary.entity.tag.DiaryTagDAO;
+import chzzk.grassdiary.domain.diary.entity.tag.MemberTags;
+import chzzk.grassdiary.domain.diary.entity.tag.MemberTagsDAO;
+import chzzk.grassdiary.domain.diary.entity.tag.TagList;
+import chzzk.grassdiary.domain.diary.entity.tag.TagListDAO;
+import chzzk.grassdiary.domain.diary.dto.DiaryDTO;
+import chzzk.grassdiary.domain.diary.dto.TagDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class TagService {
+
+    private final MemberTagsDAO memberTagsDAO;
+    private final TagListDAO tagListDAO;
+    private final DiaryTagDAO diaryTagDAO;
+
+    /**
+     * 유저의 해시태그 리스트 반환
+     */
+    public List<TagDTO> getMemberTags(Long memberId) {
+        // 멤버가 사용한 태그의 tag_id 목록 가져오기
+        List<Long> tagIds = memberTagsDAO.findTagIdsByMemberId(memberId);
+
+        // 태그 DTO 조회
+        return tagListDAO.findTagDTOByIdIn(tagIds).stream()
+                .map(tag -> new TagDTO(tag.getId(), tag.getTag())).toList();
+    }
+
+    /**
+     * 유저의 다이어리 태그로 다이어리 검색
+     */
+    public List<DiaryDTO> findByHashTagId(Long memberId, Long tagId) {
+        List<Diary> diaries = diaryTagDAO.findByMemberIdAndTagId(memberId, tagId);
+
+        return diaries.stream()
+                .map(diary -> {
+                    List<MemberTags> diaryTags = diaryTagDAO.findMemberTagsByDiaryId(diary.getId());
+                    List<TagList> tags = diaryTags.stream()
+                            .map(MemberTags::getTagList)
+                            .toList();
+                    return DiaryDTO.from(diary, tags);
+                })
+                .collect(Collectors.toList());
+    }
+}

@@ -1,6 +1,6 @@
 package chzzk.grassdiary;
 
-import chzzk.grassdiary.storage.AwsProperties;
+import chzzk.grassdiary.global.config.AwsProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

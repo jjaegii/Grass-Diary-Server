@@ -2,10 +2,10 @@
 //
 //import static org.assertj.core.api.Assertions.assertThat;
 //
-//import chzzk.grassdiary.domain.member.Member;
-//import chzzk.grassdiary.domain.member.MemberRepository;
-//import chzzk.grassdiary.web.dto.member.MemberUpdateRequest;
-//import chzzk.grassdiary.web.dto.member.MemberUpdatedResponse;
+//import chzzk.grassdiary.domain.member.entity.Member;
+//import chzzk.grassdiary.domain.member.entity.MemberRepository;
+//import chzzk.grassdiary.domain.member.dto.MemberUpdateRequest;
+//import chzzk.grassdiary.domain.member.dto.MemberUpdatedResponse;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
