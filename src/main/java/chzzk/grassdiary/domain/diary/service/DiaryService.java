@@ -60,7 +60,7 @@ public class DiaryService {
 
         Diary diary = diaryDAO.save(requestDto.toEntity(member));
 
-        if (requestDto.getHashtags() != null) {
+        if (requestDto.getHashtags() != null && !image.isEmpty()) {
             for (String hashtag : requestDto.getHashtags()) {
                 TagList tagList = tagListDAO.findByTag(hashtag)
                         .orElseGet(() -> tagListDAO.save(new TagList(hashtag)));

@@ -48,8 +48,12 @@ public class SearchDiaryController {
             @Parameter(name = "memberId", description = "멤버 아이디"),
             @Parameter(name = "tagId", description = "검색을 원하는 해시태그 아이디")
     })
-    public ResponseEntity<?> findByHashTagId(@PathVariable Long memberId, @RequestParam Long tagId) {
-        return ResponseEntity.ok(tagService.findByHashTagId(memberId, tagId));
+    public ResponseEntity<?> findByHashTagId(
+            @PathVariable Long memberId,
+            @RequestParam Long tagId,
+            @AuthenticatedMember AuthMemberPayload payload
+    ) {
+        return ResponseEntity.ok(tagService.findByHashTagId(memberId, tagId, payload.id()));
     }
 
     @GetMapping("date/{memberId}")
