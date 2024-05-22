@@ -58,9 +58,7 @@ public class DiaryService {
         Member member = memberDAO.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
 
-        Diary diary = diaryDAO.save(requestDto.toEntity(member));
-
-        if (requestDto.getHashtags() != null && !image.isEmpty()) {
+        if (requestDto.getHashtags() != null) {
             for (String hashtag : requestDto.getHashtags()) {
                 TagList tagList = tagListDAO.findByTag(hashtag)
                         .orElseGet(() -> tagListDAO.save(new TagList(hashtag)));
