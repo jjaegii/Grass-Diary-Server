@@ -26,7 +26,6 @@ import chzzk.grassdiary.global.common.error.exception.NotLikedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -54,213 +53,79 @@ public class DiaryService {
 
     @Transactional
     public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto, MultipartFile image) {
-        // TODO: 기능별 메서드 분리
-        Member member = memberDAO.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
+        Member member = getMemberById(id);
+        Diary diary = saveDiary(requestDto, member);
+        saveTags(requestDto.getHashtags(), member, diary);
 
-        if (requestDto.getHashtags() != null) {
-            for (String hashtag : requestDto.getHashtags()) {
-                TagList tagList = tagListDAO.findByTag(hashtag)
-                        .orElseGet(() -> tagListDAO.save(new TagList(hashtag)));
-                tagList.incrementCount();
-                MemberTags memberTags = memberTagsDAO.findByMemberIdAndTagList(member.getId(), tagList)
-                        .orElseGet(() -> memberTagsDAO.save(new MemberTags(member, tagList)));
-                memberTags.incrementCount();
-                diaryTagDAO.save(new DiaryTag(diary, memberTags));
-            }
-        }
+        int rewardPoint = makeRewardPoint();
+        saveRewardPointAndHistory(member, rewardPoint);
 
-        long seed = System.currentTimeMillis();
-        Random random = new Random(seed);
-        int rewardPoint = random.nextInt(10) + 1;
-
-        member.addRandomPoint(rewardPoint);
-        RewardHistory rewardHistory = rewardHistoryDAO
-                .save(new RewardHistory(member, RewardType.PLUS_DIARY_WRITE, rewardPoint));
-
-        if (rewardHistory.getId() == null) {
-            throw new IllegalArgumentException("일기 히스토리 저장 오류");
-        }
-
-        if (requestDto.getHasImage()) {
-            String imagePath = diaryImageService.uploadDiaryImage(image, FileFolder.PERSONAL_DIARY, diary);
-            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
+        if (hasImage(requestDto.getHasImage(), image)) {
+            //TODO: 만약 hasImage가 true인데 image가 비었다면 FE에게 에러 메시지 보낼 것
+            return sendSaveResponseWithImage(diary, image);
         }
         return new DiarySaveResponseDTO(diary.getId(), false, "");
+    }
+
+    private DiarySaveResponseDTO sendSaveResponseWithImage(Diary diary, MultipartFile image) {
+        String imagePath = diaryImageService.uploadDiaryImage(image, FileFolder.PERSONAL_DIARY, diary);
+        return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
     }
 
     @Transactional
     public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto, MultipartFile image) {
-        Diary diary = diaryDAO.findById(id)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
+        Diary diary = getDiaryById(id);
+        validateUpdateDate(diary);
+        updateTags(diary, requestDto.getHashtags());
 
-        // update 가능 시간 체크
-        LocalDate createdAt = diary.getCreatedAt().toLocalDate();
-
-        LocalDate today = LocalDateTime.now().toLocalDate();
-        if (!createdAt.equals(today)) {
-            throw new DiaryEditDateMismatchException(
-                    "일기를 수정 가능한 날짜가 아닙니다. createdAt = " + createdAt + ", today = " + today
-            );
-        }
-
-        // 기존 diaryTag, memberTags, tagList 찾기
-        List<DiaryTag> diaryTags = diaryTagDAO.findAllByDiaryId(diary.getId());
-        List<MemberTags> memberTags = new ArrayList<>();
-        List<TagList> tags = new ArrayList<>();
-        for (DiaryTag diaryTag : diaryTags) {
-            memberTags.add(diaryTag.getMemberTags());
-            tags.add(diaryTag.getMemberTags().getTagList());
-        }
-
-        // 기존 태그 삭제 시작
-        for (DiaryTag diaryTag : diaryTags) {
-            diaryTagDAO.delete(diaryTag);
-        }
-
-        for (MemberTags memberTag : memberTags) {
-            memberTag.decrementCount();
-            if (memberTag.getMemberTagUsageCount() == 0) {
-                memberTagsDAO.delete(memberTag);
-            }
-        }
-
-        for (TagList tag : tags) {
-            tag.decrementCount();
-            if (tag.getTagUsageCount() == 0) {
-                tagListDAO.delete(tag);
-            }
-        }
-
-        // 새로운 태그 save
-        if (requestDto.getHashtags() != null) {
-            for (String hashtag : requestDto.getHashtags()) {
-                TagList newTagList = tagListDAO.findByTag(hashtag)
-                        .orElseGet(() -> tagListDAO.save(new TagList(hashtag)));
-                newTagList.incrementCount();
-                MemberTags newMemberTags = memberTagsDAO.findByMemberIdAndTagList(diary.getMember().getId(),
-                                newTagList)
-                        .orElseGet(() -> memberTagsDAO.save(new MemberTags(diary.getMember(), newTagList)));
-                newMemberTags.incrementCount();
-                diaryTagDAO.save(new DiaryTag(diary, newMemberTags));
-            }
-        }
-
-        boolean originalHasImage = diary.getHasImage() != null && diary.getHasImage();
         boolean currentHasImage = requestDto.getHasImage();
-        String imagePath = "";
-        if (currentHasImage) {
-            imagePath = diaryImageService.updateImage(
-                    originalHasImage,
-                    image,
-                    FileFolder.PERSONAL_DIARY,
-                    diary);
-        }
-        if (originalHasImage && !currentHasImage) {
-            diaryImageService.deleteImage(diary);
-        }
+        String imagePath = updateDiaryImage(currentHasImage, image, diary);
 
-        // diary update 적용
-        diary.update(requestDto.getContent(), requestDto.getIsPrivate(), requestDto.getHasImage(),
-                requestDto.getHasTag(), requestDto.getConditionLevel());
-
-        if (currentHasImage) {
-            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
-        }
-        return new DiarySaveResponseDTO(diary.getId(), false, "");
-
+        return updateDiary(requestDto, diary, currentHasImage, imagePath);
     }
 
+    /**
+     * diaryId를 이용해서 diaryTag, MemberTag 를 찾아내기
+     * diaryTag 삭제 -> deleteAllInBatch 고려해보기
+     * MemberTag 삭제
+     * 해당 일기의 좋아요 찾기 및 삭제
+     * 이미지 삭제
+     */
     @Transactional
     public void delete(Long diaryId) {
-        Diary diary = diaryDAO.findById(diaryId)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
-
-        // diaryId를 이용해서 diaryTag를 모두 찾아내기
-        List<DiaryTag> diaryTags = diaryTagDAO.findAllByDiaryId(diary.getId());
-
-        // diaryTag를 이용해서 MemberTag를 모두 찾아내기
-        List<MemberTags> memberTags = new ArrayList<>();
-        List<TagList> tags = new ArrayList<>();
-        for (DiaryTag diaryTag : diaryTags) {
-            memberTags.add(diaryTag.getMemberTags());
-            tags.add(diaryTag.getMemberTags().getTagList());
-        }
-
-        // diaryTag 삭제 -> deleteAllInBatch 고려해보기
-        for (DiaryTag diaryTag : diaryTags) {
-            diaryTagDAO.delete(diaryTag);
-        }
-
-        // MemberTag 삭제
-        for (MemberTags memberTag : memberTags) {
-            memberTag.decrementCount();
-            if (memberTag.getMemberTagUsageCount() == 0) {
-                memberTagsDAO.delete(memberTag);
-            }
-        }
-
-        for (TagList tag : tags) {
-            tag.decrementCount();
-            if (tag.getTagUsageCount() == 0) {
-                tagListDAO.delete(tag);
-            }
-        }
-
-        // 해당 일기의 좋아요 찾기
-        List<DiaryLike> diaryLikes = diaryLikeDAO.findAllByDiaryId(diaryId);
-
-        // 좋아요 삭제
-        for (DiaryLike diaryLike : diaryLikes) {
-            diaryLikeDAO.delete(diaryLike);
-        }
-
-        // 이미지 삭제
-        if (diary.getHasImage() != null && diary.getHasImage()) {
-            diaryImageService.deleteImage(diary);
-        }
+        Diary diary = getDiaryById(diaryId);
+        removeExistingTags(diary);
+        removeDiaryLikes(diaryId);
+        removeDiaryImage(diary);
 
         diaryDAO.delete(diary);
     }
 
     @Transactional(readOnly = true)
     public DiaryDTO findById(Long diaryId, Long logInMemberId) {
-        Diary diary = diaryDAO.findById(diaryId)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+        Diary diary = getDiaryById(diaryId);
+        List<TagList> tags = getTagsByDiary(diaryId);
+        boolean isLikedByLoginMember = isDiaryLikedByLoginMember(diaryId, logInMemberId);
 
-        List<DiaryTag> diaryTags = diaryTagDAO.findAllByDiaryId(diary.getId());
-        List<TagList> tags = new ArrayList<>();
-        for (DiaryTag diaryTag : diaryTags) {
-            tags.add(diaryTag.getMemberTags().getTagList());
-        }
-
-        boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
-
-        return DiaryDTO.from(diary, tags, isLiked, getImageURL(diary.getHasImage(), diary.getId()));
+        return DiaryDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
     }
 
     @Transactional(readOnly = true)
     public Page<DiaryDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
-        Member member = memberDAO.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+        getMemberById(memberId);
 
         return diaryDAO.findDiaryByMemberId(memberId, pageable)
                 .map(diary -> {
-                    List<MemberTags> diaryTags = diaryTagDAO.findMemberTagsByDiaryId(diary.getId());
-                    List<TagList> tags = diaryTags.stream()
-                            .map(MemberTags::getTagList)
-                            .toList();
+                    List<TagList> tags = getTagsByDiary(diary.getId());
                     String imageURL = getImageURL(diary.getHasImage(), diary.getId());
-                    boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
+                    boolean isLiked = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
                     return DiaryDTO.from(diary, tags, isLiked, imageURL);
                 });
     }
 
     @Transactional(readOnly = true)
     public DiaryDTO findByDate(Long id, String date, Long logInMemberId) {
-
         LocalDate localDate = LocalDate.parse(date);
-
         LocalDateTime startOfDay = localDate.atStartOfDay();
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
@@ -271,15 +136,8 @@ public class DiaryService {
         }
 
         Diary diary = diaryList.get(0);
-        System.out.println(diary.getContent());
-
-        // 해시태그 리스트 가져오기
-        List<MemberTags> diaryTags = diaryTagDAO.findMemberTagsByDiaryId(diary.getId());
-        List<TagList> tags = diaryTags.stream()
-                .map(MemberTags::getTagList)
-                .toList();
-
-        boolean isLikedByLogInMember = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
+        List<TagList> tags = getTagsByDiary(diary.getId());
+        boolean isLikedByLogInMember = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
 
         return DiaryDTO.from(
                 diary,
@@ -291,22 +149,15 @@ public class DiaryService {
 
     @Transactional
     public Long addLike(Long diaryId, Long memberId) {
-        Diary diary = diaryDAO.findById(diaryId)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+        Diary diary = getDiaryById(diaryId);
+        Member member = getMemberById(memberId);
 
-        Member member = memberDAO.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("해당 멤버가 존재하지 않습니다. memberId = " + memberId));
-
-        diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, memberId)
-                .ifPresent(diaryLike -> {
-                    throw new AlreadyLikedException("좋아요를 이미 눌렀습니다.");
-                });
+        validateDiaryLike(diaryId, memberId);
 
         DiaryLike diaryLike = DiaryLike.builder()
                 .diary(diary)
                 .member(member)
                 .build();
-
         diaryLikeDAO.save(diaryLike);
 
         // 추후 DTO로 return값 변경
@@ -315,16 +166,162 @@ public class DiaryService {
 
     @Transactional
     public Long deleteLike(Long diaryId, Long memberId) {
-        Diary diary = diaryDAO.findById(diaryId)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. diaryId = " + diaryId));
+        getDiaryById(diaryId);
 
         DiaryLike diaryLike = diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, memberId)
                 .orElseThrow(() -> new NotLikedException("해당 게시글에 좋아요를 누르지 않았습니다."));
-
         diaryLikeDAO.delete(diaryLike);
 
         // 추후 DTO로 return값 변경
         return diaryId;
+    }
+
+    private Member getMemberById(Long id) {
+        return memberDAO.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
+    }
+
+    private Diary getDiaryById(Long id) {
+        return diaryDAO.findById(id)
+                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
+    }
+
+    private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member) {
+        return diaryDAO.save(requestDto.toEntity(member));
+    }
+
+    private void saveTags(List<String> hashtags, Member member, Diary diary) {
+        if (hashtags != null) {
+            hashtags.forEach(hashtag -> saveTag(hashtag, member, diary));
+        }
+    }
+
+    private void saveTag(String hashtag, Member member, Diary diary) {
+        TagList tagList = tagListDAO.findByTag(hashtag)
+                .orElseGet(() -> tagListDAO.save(new TagList(hashtag)));
+        tagList.incrementCount();
+        MemberTags memberTags = memberTagsDAO.findByMemberIdAndTagList(member.getId(), tagList)
+                .orElseGet(() -> memberTagsDAO.save(new MemberTags(member, tagList)));
+        memberTags.incrementCount();
+        diaryTagDAO.save(new DiaryTag(diary, memberTags));
+    }
+
+    private void updateTags(Diary diary, List<String> newHashtags) {
+        removeExistingTags(diary);
+        saveTags(newHashtags, diary.getMember(), diary);
+    }
+
+    private int makeRewardPoint() {
+        long seed = System.currentTimeMillis();
+        Random random = new Random(seed);
+        return random.nextInt(10) + 1;
+    }
+
+    private void saveRewardPointAndHistory(Member member, int rewardPoint) {
+        member.addRandomPoint(rewardPoint);
+        RewardHistory rewardHistory = rewardHistoryDAO
+                .save(new RewardHistory(member, RewardType.PLUS_DIARY_WRITE, rewardPoint));
+
+        if (rewardHistory.getId() == null) {
+            throw new IllegalArgumentException("일기 히스토리 저장 오류");
+        }
+    }
+
+    private boolean hasImage(Boolean hasImage, MultipartFile file) {
+        return hasImage != null && hasImage && file.getContentType().equals("image/jpeg");
+    }
+
+    private void validateUpdateDate(Diary diary) {
+        LocalDate createdAt = diary.getCreatedAt().toLocalDate();
+        LocalDate today = LocalDateTime.now().toLocalDate();
+        if (!createdAt.equals(today)) {
+            throw new DiaryEditDateMismatchException(
+                    "일기를 수정 가능한 날짜가 아닙니다. createdAt = " + createdAt + ", today = " + today
+            );
+        }
+    }
+
+    private void validateDiaryLike(Long diaryId, Long memberId) {
+        diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, memberId)
+                .ifPresent(diaryLike -> {
+                    throw new AlreadyLikedException("좋아요를 이미 눌렀습니다.");
+                });
+    }
+
+    private void removeExistingTags(Diary diary) {
+        List<DiaryTag> diaryTags = diaryTagDAO.findAllByDiaryId(diary.getId());
+        List<MemberTags> memberTags = new ArrayList<>();
+        List<TagList> tags = new ArrayList<>();
+        for (DiaryTag diaryTag : diaryTags) {
+            memberTags.add(diaryTag.getMemberTags());
+            tags.add(diaryTag.getMemberTags().getTagList());
+        }
+        diaryTagDAO.deleteAll(diaryTags);
+        decrementMemberTagsCount(memberTags);
+        decrementTagsCount(tags);
+    }
+
+    private void decrementMemberTagsCount(List<MemberTags> memberTags) {
+        for (MemberTags memberTag : memberTags) {
+            memberTag.decrementCount();
+            if (memberTag.getMemberTagUsageCount() == 0) {
+                memberTagsDAO.delete(memberTag);
+            }
+        }
+    }
+
+    private void decrementTagsCount(List<TagList> tags) {
+        for (TagList tag : tags) {
+            tag.decrementCount();
+            if (tag.getTagUsageCount() == 0) {
+                tagListDAO.delete(tag);
+            }
+        }
+    }
+    private void removeDiaryLikes(Long diaryId) {
+        List<DiaryLike> diaryLikes = diaryLikeDAO.findAllByDiaryId(diaryId);
+        diaryLikeDAO.deleteAll(diaryLikes);
+    }
+
+    private void removeDiaryImage(Diary diary) {
+        if (diary.getHasImage() != null && diary.getHasImage()) {
+            diaryImageService.deleteImage(diary);
+        }
+    }
+
+    private String updateDiaryImage(boolean currentHasImage, MultipartFile image, Diary diary) {
+        boolean originalHasImage = Boolean.TRUE.equals(diary.getHasImage());
+        if (currentHasImage) {
+            return diaryImageService.updateImage(originalHasImage, image, FileFolder.PERSONAL_DIARY, diary);
+        }
+        if (originalHasImage) {
+            diaryImageService.deleteImage(diary);
+        }
+        return "";
+    }
+
+    private DiarySaveResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary, boolean currentHasImage, String imagePath) {
+        diary.update(requestDto.getContent(), requestDto.getIsPrivate(), requestDto.getHasImage(),
+                requestDto.getHasTag(), requestDto.getConditionLevel());
+
+        if (currentHasImage) {
+            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
+        }
+        return new DiarySaveResponseDTO(diary.getId(), false, "");
+    }
+
+    // 다이어리에 해당하는 태그 리스트
+    private List<TagList> getTagsByDiary(Long diaryId) {
+        List<DiaryTag> diaryTags = diaryTagDAO.findAllByDiaryId(diaryId);
+        List<TagList> tags = new ArrayList<>();
+        for (DiaryTag diaryTag : diaryTags) {
+            tags.add(diaryTag.getMemberTags().getTagList());
+        }
+        return tags;
+    }
+
+    private boolean isDiaryLikedByLoginMember(Long diaryId, Long logInMemberId) {
+        return diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
     }
 
     private String getImageURL(Boolean hasImage, Long diaryId) {
