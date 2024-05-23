@@ -1,6 +1,7 @@
 package chzzk.grassdiary.domain.image.service;
 
-import chzzk.grassdiary.global.common.error.exception.file.ImageRoadFailedException;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ServerErrorCode;
 import chzzk.grassdiary.global.config.AwsProperties;
 import chzzk.grassdiary.global.util.file.FileFolder;
 import chzzk.grassdiary.global.util.file.FileNameUtil;
@@ -63,7 +64,7 @@ public class AwsS3Service implements StorageService {
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
         } catch (IOException e) {
-            throw new ImageRoadFailedException();
+            throw new SystemException(ServerErrorCode.IMAGE_UPLOAD_FAILED);
         }
 
         return convertedFileName;

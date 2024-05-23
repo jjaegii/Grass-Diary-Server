@@ -5,12 +5,6 @@ import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.domain.diary.service.DiaryService;
 import chzzk.grassdiary.domain.diary.service.TodayQuestionService;
-import chzzk.grassdiary.global.common.error.exception.AlreadyLikedException;
-import chzzk.grassdiary.global.common.error.exception.DiaryEditDateMismatchException;
-import chzzk.grassdiary.global.common.error.exception.DiaryNotFoundException;
-import chzzk.grassdiary.global.common.error.exception.ErrorObject;
-import chzzk.grassdiary.global.common.error.exception.MemberNotFoundException;
-import chzzk.grassdiary.global.common.error.exception.NotLikedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -99,35 +92,4 @@ public class DiaryController {
     public ResponseEntity<?> findTodayQuestion() {
         return ResponseEntity.ok(todayQuestionService.getTodayQuestion());
     }
-  
-    @ExceptionHandler
-    public ResponseEntity<ErrorObject> handleException(MemberNotFoundException ex) {
-        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorObject> handleException(DiaryNotFoundException ex) {
-        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorObject> handleException(AlreadyLikedException ex) {
-        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorObject> handleException(NotLikedException ex) {
-        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorObject> handleException(DiaryEditDateMismatchException ex) {
-        ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
-    }
-
 }

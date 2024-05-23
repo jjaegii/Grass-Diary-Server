@@ -1,6 +1,7 @@
 package chzzk.grassdiary.global.auth.jwt;
 
-import chzzk.grassdiary.global.auth.exception.AuthenticationException;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,6 @@ public class JwtTokenExtractor {
         if (StringUtils.hasText(accessToken) && accessToken.startsWith(PREFIX_BEARER)) {
             return accessToken.substring(PREFIX_BEARER.length());
         }
-        String logMessage = "[인증 실패] 액세스 토큰 추출 실패 - 토큰: " + accessToken;
-        throw new AuthenticationException(logMessage);
+        throw new SystemException(ClientErrorCode.AUTH_TOKEN_EXTRACTION_FAILED);
     }
 }
