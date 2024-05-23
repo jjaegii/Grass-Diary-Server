@@ -1,6 +1,6 @@
 package chzzk.grassdiary.global.common.response;
 
-public enum ClientErrorCode implements CodeModel {
+public enum ClientErrorCode implements ErrorCodeModel {
     UNAUTHORIZED(401, "UNAUTHORIZED", "인증이 필요합니다. 로그인 해주세요."),
     AUTHENTICATION_FAILED(401, "AUTHENTICATION_FAILED", "인증을 실패했습니다."),
     AUTH_INVALID_ACCESS_TOKEN(401, "AUTH_INVALID_ACCESS_TOKEN", "잘못된 액세스 토큰입니다."),

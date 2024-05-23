@@ -1,6 +1,6 @@
 package chzzk.grassdiary.global.common.response;
 
-public enum ServerErrorCode implements CodeModel {
+public enum ServerErrorCode implements ErrorCodeModel {
     SERVER_ERR(500, "SERVER_ERR", "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
     DB_CONNECTION_ERR(503, "DB_CONNECTION_ERR", "서비스를 이용할 수 없습니다. 나중에 다시 시도해주세요."),
     EXTERNAL_API_ERR(502, "EXTERNAL_API_ERR", "외부 서비스와의 통신에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."),

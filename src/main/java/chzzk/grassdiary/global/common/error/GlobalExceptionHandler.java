@@ -1,6 +1,6 @@
 package chzzk.grassdiary.global.common.error;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
-import chzzk.grassdiary.global.common.response.CodeModel;
+import chzzk.grassdiary.global.common.response.ErrorCodeModel;
 import chzzk.grassdiary.global.common.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<Response> handleCustomException(SystemException exception, WebRequest request) {
-        CodeModel errorCode = exception.getErrorCode();
+        ErrorCodeModel errorCode = exception.getErrorCode();
         Response response = Response.error(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatusCode()));
     }

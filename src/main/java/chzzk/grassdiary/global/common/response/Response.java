@@ -18,7 +18,7 @@ public class Response {
         this.description = description;
     }
 
-    public static Response error(CodeModel errorCode) {
+    public static Response error(ErrorCodeModel errorCode) {
         return new Response(
                 errorCode.getStatusCode(),
                 errorCode.getSystemErrorCode(),
@@ -26,7 +26,7 @@ public class Response {
         );
     }
 
-    public static Response success(CodeModel successCode) {
+    public static Response success(ErrorCodeModel successCode) {
         return new Response(
                 successCode.getStatusCode(),
                 successCode.getSystemErrorCode(),
