@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         Response response = new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), // status: 500
                 "INTERNAL_SERVER_ERROR",
-                "예기치 않은 오류가 발생했습니다."
+                "예기치 못한 오류가 발생했습니다."
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
