@@ -12,10 +12,13 @@ public record DiaryDTO(
         Float transparency,
         Boolean isPrivate,
         Integer likeCount,
+        Boolean isLikedByLogInMember,
         String createdDate,
-        String createdAt
+        String createdAt,
+        Boolean hasImage,
+        String imageURL
 ) {
-    public static DiaryDTO from(Diary diary, List<TagList> tags) {
+    public static DiaryDTO from(Diary diary, List<TagList> tags, boolean isLikedByLogInMember, String imageURL) {
         return new DiaryDTO(
                 diary.getId(),
                 diary.getContent(),
@@ -23,8 +26,11 @@ public record DiaryDTO(
                 diary.getConditionLevel().getTransparency(),
                 diary.getIsPrivate(),
                 diary.getDiaryLikes().size(),
+                isLikedByLogInMember,
                 diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
-                diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"))
+                diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")),
+                diary.getHasImage(),
+                imageURL
         );
     }
 }

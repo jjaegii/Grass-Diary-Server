@@ -49,7 +49,7 @@ public class DiaryImageService {
         diaryImageDAO.delete(diaryImage);
     }
 
-    public String getImageURL(Diary diary) {
-        return baseURL + diaryImageDAO.findByDiaryId(diary.getId()).getImagePath();
+    public String getImageURL(Long diaryId) {
+        return baseURL + diaryImageDAO.findByDiaryId(diaryId).getImagePath();
     }
 }

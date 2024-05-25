@@ -4,6 +4,8 @@ import chzzk.grassdiary.domain.diary.service.DiaryService;
 import chzzk.grassdiary.domain.diary.service.TagService;
 import chzzk.grassdiary.domain.diary.dto.DiaryDTO;
 import chzzk.grassdiary.domain.diary.dto.TagDTO;
+import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
+import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -46,8 +48,12 @@ public class SearchDiaryController {
             @Parameter(name = "memberId", description = "멤버 아이디"),
             @Parameter(name = "tagId", description = "검색을 원하는 해시태그 아이디")
     })
-    public ResponseEntity<?> findByHashTagId(@PathVariable Long memberId, @RequestParam Long tagId) {
-        return ResponseEntity.ok(tagService.findByHashTagId(memberId, tagId));
+    public ResponseEntity<?> findByHashTagId(
+            @PathVariable Long memberId,
+            @RequestParam Long tagId,
+            @AuthenticatedMember AuthMemberPayload payload
+    ) {
+        return ResponseEntity.ok(tagService.findByHashTagId(memberId, tagId, payload.id()));
     }
 
     @GetMapping("date/{memberId}")
@@ -59,7 +65,11 @@ public class SearchDiaryController {
             @Parameter(name = "date", description = "검색하는 날짜 String 값(형식: yyyy-MM-dd)")
     })
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = DiaryDTO.class)))
-    public ResponseEntity<?> searchByDate(@PathVariable Long memberId, @RequestParam String date) {
-        return ResponseEntity.ok(diaryService.findByDate(memberId, date));
+    public ResponseEntity<?> searchByDate(
+            @PathVariable Long memberId,
+            @RequestParam String date,
+            @AuthenticatedMember AuthMemberPayload payload
+    ) {
+        return ResponseEntity.ok(diaryService.findByDate(memberId, date, payload.id()));
     }
 }

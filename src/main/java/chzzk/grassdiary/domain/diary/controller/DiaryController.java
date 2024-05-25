@@ -58,7 +58,7 @@ public class DiaryController {
     }
 
     @GetMapping("/{diaryId}")
-    public DiaryResponseDTO findById(@PathVariable(name = "diaryId") Long diaryId,
+    public DiaryDTO findById(@PathVariable(name = "diaryId") Long diaryId,
                                      @AuthenticatedMember AuthMemberPayload payload) {
         return diaryService.findById(diaryId, payload.id());
     }
@@ -76,9 +76,10 @@ public class DiaryController {
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = DiaryDTO.class)))
     public ResponseEntity<?> findAll(
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            @PathVariable Long memberId
+            @PathVariable Long memberId,
+            @AuthenticatedMember AuthMemberPayload payload
     ) {
-        return ResponseEntity.ok(diaryService.findAll(pageable, memberId));
+        return ResponseEntity.ok(diaryService.findAll(pageable, memberId, payload.id()));
     }
 
     // todo: 로그인 공부 후 memberId 부분을 auth로? 대체할 수 있는지 알아보기
