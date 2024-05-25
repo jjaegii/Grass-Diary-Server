@@ -2,6 +2,7 @@ package chzzk.grassdiary.domain.diary;
 
 import chzzk.grassdiary.domain.base.BaseTimeEntity;
 import chzzk.grassdiary.domain.color.ConditionLevel;
+import chzzk.grassdiary.domain.diary.comment.Comment;
 import chzzk.grassdiary.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,9 @@ public class Diary extends BaseTimeEntity {
 
     @ColumnDefault("true")
     private Boolean isPrivate;
+
+    @OneToMany(mappedBy = "diary")
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "diary")
     private List<DiaryLike> diaryLikes = new ArrayList<>();
