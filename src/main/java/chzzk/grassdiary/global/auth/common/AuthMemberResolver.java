@@ -1,10 +1,11 @@
 package chzzk.grassdiary.global.auth.common;
 
-import chzzk.grassdiary.global.auth.exception.AuthenticationException;
 import chzzk.grassdiary.global.auth.jwt.JwtTokenProvider;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +36,7 @@ public class AuthMemberResolver implements HandlerMethodArgumentResolver {
         Long memberId = jwtTokenProvider.extractIdFromAccessToken(jwtToken);
 
         Member foundMember = memberDAO.findById(memberId)
-                .orElseThrow(() -> new AuthenticationException("로그인이 필요한 사용자입니다."));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.UNAUTHORIZED));
 
         return new AuthMemberPayload(foundMember.getId());
     }

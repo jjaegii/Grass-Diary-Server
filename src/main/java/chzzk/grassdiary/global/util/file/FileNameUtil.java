@@ -1,6 +1,7 @@
 package chzzk.grassdiary.global.util.file;
 
-import chzzk.grassdiary.global.common.error.exception.file.IllegalMimeTypeException;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 
 import java.util.UUID;
 
@@ -8,7 +9,7 @@ public class FileNameUtil {
     public static void checkImageMimeType(String mimeType) {
         if (!(mimeType.equals("image/jpg") || mimeType.equals("image/jpeg")
                 || mimeType.equals("image/png") || mimeType.equals("image/gif"))) {
-            throw new IllegalMimeTypeException();
+            throw new SystemException(ClientErrorCode.INVALID_IMAGE_FORMAT);
         }
     }
 

@@ -1,10 +1,11 @@
 package chzzk.grassdiary.global.auth.filter;
 
-import chzzk.grassdiary.global.auth.exception.AuthenticationException;
 import chzzk.grassdiary.global.auth.jwt.JwtTokenExtractor;
 import chzzk.grassdiary.global.auth.jwt.JwtTokenProvider;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private void validateMemberExist(Long id) {
         Optional<Member> foundMember = memberDAO.findById(id);
         if (foundMember.isEmpty()) {
-            String logMessage = "인증 실패(미인증 사용자 요청) - member_id: " + id;
-            throw new AuthenticationException(logMessage);
+            throw new SystemException(ClientErrorCode.UNAUTHORIZED);
         }
     }
 }

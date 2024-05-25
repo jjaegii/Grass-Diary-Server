@@ -5,6 +5,8 @@ import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.domain.member.dto.MemberIdDto;
 import chzzk.grassdiary.domain.member.dto.MemberUpdateRequest;
 import chzzk.grassdiary.domain.member.dto.MemberUpdatedResponse;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ public class SettingService {
 
     public MemberUpdatedResponse updateMemberInfo(Long id, MemberUpdateRequest request) {
         Member foundMember = memberDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
 
         foundMember.updateProfile(request.nickname(), request.profileIntro());
 
@@ -28,7 +30,7 @@ public class SettingService {
 
     public MemberIdDto findMemberInfo(Long id) {
         Member foundMember = memberDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
         return MemberIdDto.from(foundMember);
     }
 }

@@ -3,6 +3,8 @@ package chzzk.grassdiary.domain.image.service;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import chzzk.grassdiary.domain.image.entity.DiaryImage;
 import chzzk.grassdiary.domain.image.entity.DiaryImageDAO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import chzzk.grassdiary.global.util.file.FileFolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class DiaryImageService {
 
     public String uploadDiaryImage(MultipartFile image, FileFolder category, Diary diary) {
         if(image.isEmpty()) {
-            throw new IllegalArgumentException("Image cannot be empty");
+            throw new SystemException(ClientErrorCode.IMAGE_FILE_EMPTY);
         }
 
         String imagePath = awsS3Service.uploadBucket(image, category);

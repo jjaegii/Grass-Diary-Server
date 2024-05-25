@@ -17,12 +17,11 @@ import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.domain.reward.RewardHistory;
 import chzzk.grassdiary.domain.reward.RewardHistoryDAO;
 import chzzk.grassdiary.domain.reward.RewardType;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import chzzk.grassdiary.global.common.response.ServerErrorCode;
 import chzzk.grassdiary.global.util.file.FileFolder;
-import chzzk.grassdiary.global.common.error.exception.AlreadyLikedException;
-import chzzk.grassdiary.global.common.error.exception.DiaryEditDateMismatchException;
-import chzzk.grassdiary.global.common.error.exception.DiaryNotFoundException;
-import chzzk.grassdiary.global.common.error.exception.MemberNotFoundException;
-import chzzk.grassdiary.global.common.error.exception.NotLikedException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -169,7 +168,7 @@ public class DiaryService {
         getDiaryById(diaryId);
 
         DiaryLike diaryLike = diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, memberId)
-                .orElseThrow(() -> new NotLikedException("해당 게시글에 좋아요를 누르지 않았습니다."));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.DIARY_LIKE_NOT_FOUND));
         diaryLikeDAO.delete(diaryLike);
 
         // 추후 DTO로 return값 변경
@@ -178,12 +177,12 @@ public class DiaryService {
 
     private Member getMemberById(Long id) {
         return memberDAO.findById(id)
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
     }
 
     private Diary getDiaryById(Long id) {
         return diaryDAO.findById(id)
-                .orElseThrow(() -> new DiaryNotFoundException("해당 일기가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.DIARY_NOT_FOUND_ERR));
     }
 
     private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member) {
@@ -223,7 +222,7 @@ public class DiaryService {
                 .save(new RewardHistory(member, RewardType.PLUS_DIARY_WRITE, rewardPoint));
 
         if (rewardHistory.getId() == null) {
-            throw new IllegalArgumentException("일기 히스토리 저장 오류");
+            throw new SystemException(ServerErrorCode.REWARD_HISTORY_SAVE_FAILED);
         }
     }
 
@@ -235,16 +234,14 @@ public class DiaryService {
         LocalDate createdAt = diary.getCreatedAt().toLocalDate();
         LocalDate today = LocalDateTime.now().toLocalDate();
         if (!createdAt.equals(today)) {
-            throw new DiaryEditDateMismatchException(
-                    "일기를 수정 가능한 날짜가 아닙니다. createdAt = " + createdAt + ", today = " + today
-            );
+            throw new SystemException(ClientErrorCode.DIARY_ALREADY_EXISTS);
         }
     }
 
     private void validateDiaryLike(Long diaryId, Long memberId) {
         diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, memberId)
                 .ifPresent(diaryLike -> {
-                    throw new AlreadyLikedException("좋아요를 이미 눌렀습니다.");
+                    throw new SystemException(ClientErrorCode.DIARY_LIKE_ALREADY_EXISTS);
                 });
     }
 

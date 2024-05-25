@@ -7,7 +7,8 @@ import chzzk.grassdiary.domain.member.dto.GrassInfoDTO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.domain.color.ColorCode;
-import chzzk.grassdiary.global.common.error.exception.MemberNotFoundException;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class GrassCountService {
     public GrassInfoDTO findGrassHistoryById(Long memberId) {
         List<Diary> diaryHistory = diaryDAO.findAllByMemberIdOrderByCreatedAt(memberId);
         Member member = memberDAO.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
         ColorCode colorCode = member.getCurrentColorCode();
         return new GrassInfoDTO(diaryHistory, colorCode.getRgb());
     }
@@ -46,7 +47,7 @@ public class GrassCountService {
         LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
 
         Member member = memberDAO.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
 
         List<Diary> thisMonthHistory = diaryDAO.findByMemberIdAndCreatedAtBetween(memberId, startOfDay,
                 endOfToday);

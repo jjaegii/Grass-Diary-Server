@@ -1,8 +1,8 @@
 package chzzk.grassdiary.global.auth.jwt;
 
-import chzzk.grassdiary.global.auth.exception.AuthenticationException;
-import chzzk.grassdiary.global.auth.exception.JwtException;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
-    private static final String EXPIRED_ACCESS_TOKEN_MESSAGE = "EXPIRED_ACCESS_TOKEN";
     private static final String MEMBER_ID = "id";
     private static final String ALGORITHM = "HmacSHA256";
 
@@ -50,8 +49,7 @@ public class JwtTokenProvider {
         Long extractedId = claimsJws.getBody().get(MEMBER_ID, Long.class);
 
         if (extractedId == null) {
-            String logMessage = "인증 실패(JWT 액세스 토큰 Payload id 누락) - 토큰 : " + token;
-            throw new AuthenticationException(logMessage);
+            throw new SystemException(ClientErrorCode.AUTH_MISSING_ID_IN_ACCESS_TOKEN);
         }
         return extractedId;
     }
@@ -68,16 +66,13 @@ public class JwtTokenProvider {
         try {
             Claims claims = getAccessTokenParser().parseClaimsJws(token).getBody();
         } catch (MalformedJwtException | UnsupportedJwtException exception) {
-            String logMessage = "인증 실패(잘못된 액세스 토큰인 경우): " + token;
-            throw new AuthenticationException(logMessage);
+            throw new SystemException(ClientErrorCode.AUTH_INVALID_ACCESS_TOKEN, exception);
         } catch (ExpiredJwtException expiredJwtException) {
-            throw new AuthenticationException("인증 실패(토큰 만료인 경우): " + EXPIRED_ACCESS_TOKEN_MESSAGE);
+            throw new SystemException(ClientErrorCode.AUTH_EXPIRED_ACCESS_TOKEN, expiredJwtException);
         } catch (SignatureException signatureException) {
-            String logMessage = "인증 실패(잘못된 시그니처인 경우): " + token;
-            throw new AuthenticationException(logMessage);
-        } catch (JwtException jwtException) {
-            String logMessage = "인증 실패(기타 오류 발생): " + token;
-            throw new AuthenticationException(logMessage);
+            throw new SystemException(ClientErrorCode.AUTH_INVALID_SIGNATURE);
+        } catch (RuntimeException exception) { // 기타 오류 발생
+            throw new SystemException(ClientErrorCode.AUTH_JWT_ERROR);
         }
     }
 }

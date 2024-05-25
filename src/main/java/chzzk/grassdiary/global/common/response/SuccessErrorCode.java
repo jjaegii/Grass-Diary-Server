@@ -1,13 +1,13 @@
 package chzzk.grassdiary.global.common.response;
 
-public enum SuccessCode implements CodeModel {
+public enum SuccessErrorCode implements ErrorCodeModel {
     SUCCESS(200, "S001", "SUCCESS");
 
     private final int status;
     private final String systemErrorCode;
     private final String description;
 
-    SuccessCode(int status, String systemErrorCode, String description) {
+    SuccessErrorCode(int status, String systemErrorCode, String description) {
         this.status = status;
         this.systemErrorCode = systemErrorCode;
         this.description = description;

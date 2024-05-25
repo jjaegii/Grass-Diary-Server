@@ -5,6 +5,8 @@ import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.domain.reward.RewardHistory;
 import chzzk.grassdiary.domain.reward.RewardHistoryDAO;
 import chzzk.grassdiary.domain.member.dto.RewardHistoryDTO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ public class RewardService {
 
     public TotalRewardDTO findTotalRewardById(Long memberId) {
         memberDAO.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버 입니다. (id: " + memberId + ")"));
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
 
         Integer rewardPoint = memberDAO.findRewardPointById(memberId);
         return new TotalRewardDTO(rewardPoint);
