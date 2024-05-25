@@ -4,7 +4,7 @@ import chzzk.grassdiary.domain.diary.Diary;
 import chzzk.grassdiary.domain.diary.comment.Comment;
 import chzzk.grassdiary.domain.member.Member;
 
-public record CommentRequestDTO(
+public record CommentSaveRequestDTO(
         Long memberId,
         Long diaryId,
         String content,
