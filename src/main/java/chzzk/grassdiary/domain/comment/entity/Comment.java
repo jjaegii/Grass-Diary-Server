@@ -53,7 +53,7 @@ public class Comment extends BaseTimeEntity {
 //    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 //    private List<CommentLike> commentLikes = new ArrayList<>();
 
-    private boolean isDeleted;
+    private boolean deleted;
 
     @Builder
     protected Comment(Member member, Diary diary, String content, Comment parentComment) {
@@ -61,10 +61,14 @@ public class Comment extends BaseTimeEntity {
         this.diary = diary;
         this.content = content;
         this.parentComment = parentComment;
-        this.isDeleted = false;
+        this.deleted = false;
     }
 
     public void update(String content) {
         this.content = content;
+    }
+
+    public void delete(boolean deleted) {
+        this.deleted = deleted;
     }
 }

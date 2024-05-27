@@ -1,5 +1,7 @@
 package chzzk.grassdiary.domain.comment.service;
 
+import chzzk.grassdiary.domain.comment.dto.CommentDeleteRequestDTO;
+import chzzk.grassdiary.domain.comment.dto.CommentDeleteResponseDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentSaveRequestDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentUpdateRequestDTO;
 import chzzk.grassdiary.domain.comment.entity.Comment;
@@ -23,29 +25,34 @@ public class CommentService {
     private final MemberDAO memberDAO;
 
     @Transactional
-    public CommentResponseDTO save(Long logInMemberId, Long diaryId, CommentSaveRequestDTO requestDTO) {
-
+    public CommentResponseDTO save(Long diaryId, CommentSaveRequestDTO requestDTO, Long logInMemberId) {
         Member member = getMemberById(logInMemberId);
-
         Diary diary = getDiaryById(diaryId);
-
         Comment parentComment = getParentCommentById(requestDTO.parentCommentId());
-
         Comment comment = requestDTO.toEntity(member, diary, parentComment);
-
         commentDAO.save(comment);
 
         return CommentResponseDTO.from(comment);
     }
 
     @Transactional
-    public CommentResponseDTO update(Long logInMemberId, Long CommentId, CommentUpdateRequestDTO requestDTO) {
+    public CommentResponseDTO update(Long CommentId, CommentUpdateRequestDTO requestDTO, Long logInMemberId) {
         Member member = getMemberById(logInMemberId);
         Comment comment = getCommentById(CommentId);
         validateCommentAuthor(member, comment);
-
         comment.update(requestDTO.content());
+
         return CommentResponseDTO.from(comment);
+    }
+
+    @Transactional
+    public CommentDeleteResponseDTO delete(Long CommentId, CommentDeleteRequestDTO requestDTO, Long logInMemberId) {
+        Member member = getMemberById(logInMemberId);
+        Comment comment = getCommentById(CommentId);
+        validateCommentAuthor(member, comment);
+        comment.delete(requestDTO.deleted());
+
+        return CommentDeleteResponseDTO.from(comment);
     }
 
     private Member getMemberById(Long id) {

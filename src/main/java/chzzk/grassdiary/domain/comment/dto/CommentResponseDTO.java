@@ -8,17 +8,17 @@ public record CommentResponseDTO(
         // todo: 사진정보 추가
         Long memberId,
         String content,
+        boolean deleted,
         String createdDate,
         String createdAt
-
 ) {
     public static CommentResponseDTO from(Comment comment) {
         return new CommentResponseDTO(
                 comment.getMember().getId(),
                 comment.getContent(),
+                comment.isDeleted(),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
-
 }
