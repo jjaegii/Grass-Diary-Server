@@ -4,10 +4,9 @@ import chzzk.grassdiary.domain.comment.dto.CommentSaveRequestDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentUpdateRequestDTO;
 import chzzk.grassdiary.domain.comment.entity.Comment;
 import chzzk.grassdiary.domain.comment.entity.CommentDAO;
-import chzzk.grassdiary.domain.diary.dto.DiarySaveRequestDTO;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import chzzk.grassdiary.domain.diary.entity.DiaryDAO;
-import chzzk.grassdiary.domain.comment.dto.CommentSaveResponseDTO;
+import chzzk.grassdiary.domain.comment.dto.CommentResponseDTO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
@@ -24,7 +23,7 @@ public class CommentService {
     private final MemberDAO memberDAO;
 
     @Transactional
-    public CommentSaveResponseDTO save(Long logInMemberId, Long diaryId, CommentSaveRequestDTO requestDTO) {
+    public CommentResponseDTO save(Long logInMemberId, Long diaryId, CommentSaveRequestDTO requestDTO) {
 
         Member member = getMemberById(logInMemberId);
 
@@ -36,17 +35,17 @@ public class CommentService {
 
         commentDAO.save(comment);
 
-        return CommentSaveResponseDTO.from(comment);
+        return CommentResponseDTO.from(comment);
     }
 
     @Transactional
-    public CommentSaveResponseDTO update(Long logInMemberId, Long CommentId, CommentUpdateRequestDTO requestDTO) {
+    public CommentResponseDTO update(Long logInMemberId, Long CommentId, CommentUpdateRequestDTO requestDTO) {
         Member member = getMemberById(logInMemberId);
         Comment comment = getCommentById(CommentId);
         validateCommentAuthor(member, comment);
 
         comment.update(requestDTO.content());
-        return CommentSaveResponseDTO.from(comment);
+        return CommentResponseDTO.from(comment);
     }
 
     private Member getMemberById(Long id) {
