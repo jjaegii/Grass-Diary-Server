@@ -2,16 +2,16 @@
 //
 //import static org.assertj.core.api.Assertions.assertThat;
 //
-//import chzzk.grassdiary.domain.color.ConditionLevel;
-//import chzzk.grassdiary.domain.diary.Diary;
-//import chzzk.grassdiary.domain.diary.DiaryRepository;
+//import chzzk.grassdiary.domain.member.entity.color.ConditionLevel;
+//import chzzk.grassdiary.domain.diary.entity.Diary;
+//import chzzk.grassdiary.domain.diary.entity.dao.DiaryRepository;
 //import chzzk.grassdiary.domain.diary.tag.MemberTags;
 //import chzzk.grassdiary.domain.diary.tag.MemberTagsRepository;
 //import chzzk.grassdiary.domain.diary.tag.TagList;
 //import chzzk.grassdiary.domain.diary.tag.TagListRepository;
-//import chzzk.grassdiary.domain.member.Member;
-//import chzzk.grassdiary.domain.member.MemberRepository;
-//import chzzk.grassdiary.web.dto.diary.TagDTO;
+//import chzzk.grassdiary.domain.member.entity.Member;
+//import chzzk.grassdiary.domain.member.entity.MemberRepository;
+//import chzzk.grassdiary.domain.diary.dto.TagDTO;
 //import java.util.ArrayList;
 //import java.util.List;
 //import org.junit.jupiter.api.BeforeEach;

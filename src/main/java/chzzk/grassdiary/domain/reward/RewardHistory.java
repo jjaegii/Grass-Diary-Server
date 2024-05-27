@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.reward;
 
 import chzzk.grassdiary.domain.base.BaseCreatedTimeEntity;
-import chzzk.grassdiary.domain.member.Member;
+import chzzk.grassdiary.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
