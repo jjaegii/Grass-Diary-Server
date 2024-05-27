@@ -13,9 +13,9 @@ public record CommentSaveResponseDTO(
         String createdAt
 
 ) {
-    public static CommentSaveResponseDTO from(Member member, Comment comment) {
+    public static CommentSaveResponseDTO from(Comment comment) {
         return new CommentSaveResponseDTO(
-                member.getId(),
+                comment.getMember().getId(),
                 comment.getContent(),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"))

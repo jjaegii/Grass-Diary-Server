@@ -1,6 +1,7 @@
 package chzzk.grassdiary.domain.comment.service;
 
 import chzzk.grassdiary.domain.comment.dto.CommentSaveRequestDTO;
+import chzzk.grassdiary.domain.comment.dto.CommentUpdateRequestDTO;
 import chzzk.grassdiary.domain.comment.entity.Comment;
 import chzzk.grassdiary.domain.comment.entity.CommentDAO;
 import chzzk.grassdiary.domain.diary.dto.DiarySaveRequestDTO;
@@ -35,7 +36,17 @@ public class CommentService {
 
         commentDAO.save(comment);
 
-        return CommentSaveResponseDTO.from(member, comment);
+        return CommentSaveResponseDTO.from(comment);
+    }
+
+    @Transactional
+    public CommentSaveResponseDTO update(Long logInMemberId, Long CommentId, CommentUpdateRequestDTO requestDTO) {
+        Member member = getMemberById(logInMemberId);
+        Comment comment = getCommentById(CommentId);
+        validateCommentAuthor(member, comment);
+
+        comment.update(requestDTO.content());
+        return CommentSaveResponseDTO.from(comment);
     }
 
     private Member getMemberById(Long id) {
@@ -58,5 +69,11 @@ public class CommentService {
     private Comment getCommentById(Long id) {
         return commentDAO.findById(id)
                 .orElseThrow(() -> new SystemException(ClientErrorCode.COMMENT_NOT_FOUND_ERR));
+    }
+
+    private void validateCommentAuthor(Member member, Comment comment) {
+        if (!member.equals(comment.getMember())) {
+            throw new SystemException(ClientErrorCode.AUTHOR_MISMATCH_ERR);
+        }
     }
 }

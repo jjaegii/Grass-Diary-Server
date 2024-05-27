@@ -19,6 +19,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     COMMENT_NOT_FOUND_ERR(404, "COMMENT_NOT_FOUND_ERR", "요청하신 댓글을 찾을 수 없습니다."),
     INVALID_IMAGE_FORMAT(400, "INVALID_IMAGE_FORMAT", "허용되지 않는 파일 형식입니다."),
     IMAGE_FILE_EMPTY(400, "IMAGE_FILE_EMPTY", "이미지 파일이 비어 있습니다."),
+    AUTHOR_MISMATCH_ERR(403, "AUTHOR_MISMATCH_ERR", "작성자가 아닙니다."),
 
     VALIDATION_ERR(400, "VALIDATION_ERR", "잘못된 입력입니다. 올바른 값을 입력해주세요."),
     PERMISSION_ERR(403, "PERMISSION_ERR", "접근 권한이 없습니다. 관리자에게 문의하세요."),
