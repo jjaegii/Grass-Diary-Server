@@ -101,16 +101,16 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public DiaryDTO findById(Long diaryId, Long logInMemberId) {
+    public DiaryDetailDTO findById(Long diaryId, Long logInMemberId) {
         Diary diary = getDiaryById(diaryId);
         List<TagList> tags = getTagsByDiary(diaryId);
         boolean isLikedByLoginMember = isDiaryLikedByLoginMember(diaryId, logInMemberId);
 
-        return DiaryDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
+        return DiaryDetailDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
     }
 
     @Transactional(readOnly = true)
-    public Page<DiaryDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
+    public Page<DiaryDetailDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
         getMemberById(memberId);
 
         return diaryDAO.findDiaryByMemberId(memberId, pageable)
@@ -118,12 +118,12 @@ public class DiaryService {
                     List<TagList> tags = getTagsByDiary(diary.getId());
                     String imageURL = getImageURL(diary.getHasImage(), diary.getId());
                     boolean isLiked = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
-                    return DiaryDTO.from(diary, tags, isLiked, imageURL);
+                    return DiaryDetailDTO.from(diary, tags, isLiked, imageURL);
                 });
     }
 
     @Transactional(readOnly = true)
-    public DiaryDTO findByDate(Long id, String date, Long logInMemberId) {
+    public DiaryDetailDTO findByDate(Long id, String date, Long logInMemberId) {
         LocalDate localDate = LocalDate.parse(date);
         LocalDateTime startOfDay = localDate.atStartOfDay();
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
@@ -138,7 +138,7 @@ public class DiaryService {
         List<TagList> tags = getTagsByDiary(diary.getId());
         boolean isLikedByLogInMember = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
 
-        return DiaryDTO.from(
+        return DiaryDetailDTO.from(
                 diary,
                 tags,
                 isLikedByLogInMember,
