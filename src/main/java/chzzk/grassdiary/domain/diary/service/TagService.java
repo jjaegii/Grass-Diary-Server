@@ -32,11 +32,14 @@ public class TagService {
      */
     public List<TagDTO> getMemberTags(Long memberId) {
         // 멤버가 사용한 태그의 tag_id 목록 가져오기
-        List<Long> tagIds = memberTagsDAO.findTagIdsByMemberId(memberId);
+        List<MemberTags> memberTags = memberTagsDAO.findMemberTagsByMemberId(memberId);
 
-        // 태그 DTO 조회
-        return tagListDAO.findTagDTOByIdIn(tagIds).stream()
-                .map(tag -> new TagDTO(tag.getId(), tag.getTag())).toList();
+        return memberTags.stream().map(tag ->
+                new TagDTO(
+                        tag.getId(),
+                        tag.getTagList().getTag(),
+                        tag.getMemberTagUsageCount())
+        ).toList();
     }
 
     /**
