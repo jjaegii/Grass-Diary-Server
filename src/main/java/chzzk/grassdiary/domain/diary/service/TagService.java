@@ -36,7 +36,7 @@ public class TagService {
 
         return memberTags.stream().map(tag ->
                 new TagDTO(
-                        tag.getId(),
+                        tag.getTagList().getId(),
                         tag.getTagList().getTag(),
                         tag.getMemberTagUsageCount())
         ).toList();
@@ -58,7 +58,7 @@ public class TagService {
 
                     return DiaryDetailDTO.from(diary, tags, isLiked, getImageURL(diary.getHasImage(), diary.getId()));
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String getImageURL(Boolean hasImage, Long diaryId) {
