@@ -1,6 +1,5 @@
 package chzzk.grassdiary.domain.comment.controller;
 
-import chzzk.grassdiary.domain.comment.dto.CommentDeleteRequestDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentDeleteResponseDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentResponseDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentSaveRequestDTO;
@@ -10,17 +9,14 @@ import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -52,10 +48,9 @@ public class CommentController {
     @PatchMapping("/{commentId}/delete")
     public CommentDeleteResponseDTO delete(
             @PathVariable(name = "commentId") Long commentId,
-            @RequestBody CommentDeleteRequestDTO requestDTO,
             @AuthenticatedMember AuthMemberPayload payload
     ) {
-        return commentService.delete(commentId, requestDTO, payload.id());
+        return commentService.delete(commentId, payload.id());
     }
 
     // 모든 댓글 검색

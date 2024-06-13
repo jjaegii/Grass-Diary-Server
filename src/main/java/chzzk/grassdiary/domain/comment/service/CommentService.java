@@ -1,6 +1,5 @@
 package chzzk.grassdiary.domain.comment.service;
 
-import chzzk.grassdiary.domain.comment.dto.CommentDeleteRequestDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentDeleteResponseDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentSaveRequestDTO;
 import chzzk.grassdiary.domain.comment.dto.CommentUpdateRequestDTO;
@@ -48,11 +47,13 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDeleteResponseDTO delete(Long CommentId, CommentDeleteRequestDTO requestDTO, Long logInMemberId) {
+    public CommentDeleteResponseDTO delete(Long CommentId, Long logInMemberId) {
         Member member = getMemberById(logInMemberId);
         Comment comment = getCommentById(CommentId);
         validateCommentAuthor(member, comment);
-        comment.delete(requestDTO.deleted());
+        validateNotDeleted(comment);
+
+        comment.delete();
 
         return CommentDeleteResponseDTO.from(comment);
     }
@@ -97,6 +98,12 @@ public class CommentService {
     private void validateCommentAuthor(Member member, Comment comment) {
         if (!member.equals(comment.getMember())) {
             throw new SystemException(ClientErrorCode.AUTHOR_MISMATCH_ERR);
+        }
+    }
+
+    private void validateNotDeleted(Comment comment) {
+        if (comment.isDeleted()) {
+            throw new SystemException(ClientErrorCode.COMMENT_ALREADY_DELETED_ERR);
         }
     }
 }
