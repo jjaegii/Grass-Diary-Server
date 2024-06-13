@@ -21,4 +21,14 @@ public record CommentResponseDTO(
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
+
+    public static CommentResponseDTO fromDeleted(Comment comment) {
+        return new CommentResponseDTO(
+                null,
+                null,
+                true,
+                null,
+                null
+        );
+    }
 }

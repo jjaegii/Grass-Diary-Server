@@ -14,6 +14,8 @@ import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +55,21 @@ public class CommentService {
         comment.delete(requestDTO.deleted());
 
         return CommentDeleteResponseDTO.from(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<CommentResponseDTO> findAll(Pageable pageable, Long diaryId) {
+        Diary diary = getDiaryById(diaryId);
+        Slice<Comment> comments = commentDAO.findAllByDiaryId(diaryId, pageable);
+
+        return comments.map(this::mapToDTO);
+    }
+
+    private CommentResponseDTO mapToDTO(Comment comment) {
+        if (comment.isDeleted()) {
+            return CommentResponseDTO.fromDeleted(comment);
+        }
+        return CommentResponseDTO.from(comment);
     }
 
     private Member getMemberById(Long id) {
