@@ -2,6 +2,8 @@ package chzzk.grassdiary.domain.comment.dto;
 
 import chzzk.grassdiary.domain.comment.entity.Comment;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public record CommentResponseDTO(
         // 멤버 정보(사진, 아이디), 댓글내용, 작성 시간
@@ -10,7 +12,8 @@ public record CommentResponseDTO(
         String content,
         boolean deleted,
         String createdDate,
-        String createdAt
+        String createdAt,
+        List<CommentResponseDTO> childComments
 ) {
     public static CommentResponseDTO from(Comment comment) {
         return new CommentResponseDTO(
@@ -18,7 +21,8 @@ public record CommentResponseDTO(
                 comment.getContent(),
                 comment.isDeleted(),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
-                comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm"))
+                comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")),
+                comment.getChildComments().stream().map(CommentResponseDTO::from).collect(Collectors.toList())
         );
     }
 
@@ -28,7 +32,8 @@ public record CommentResponseDTO(
                 null,
                 true,
                 null,
-                null
+                null,
+                comment.getChildComments().stream().map(CommentResponseDTO::from).collect(Collectors.toList())
         );
     }
 }

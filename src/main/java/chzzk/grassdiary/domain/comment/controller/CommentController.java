@@ -8,6 +8,7 @@ import chzzk.grassdiary.domain.comment.service.CommentService;
 import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -55,7 +56,7 @@ public class CommentController {
 
     // 모든 댓글 검색
     @GetMapping("/{diaryId}")
-    public Slice<CommentResponseDTO> findAll(
+    public List<CommentResponseDTO> findAll(
             Pageable pageable,
             @PathVariable(name = "diaryId") Long diaryId
     ) {

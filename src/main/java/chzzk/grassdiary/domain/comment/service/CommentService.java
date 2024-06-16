@@ -12,6 +12,11 @@ import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -59,11 +64,36 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<CommentResponseDTO> findAll(Pageable pageable, Long diaryId) {
+    public List<CommentResponseDTO> findAll(Pageable pageable, Long diaryId) {
         Diary diary = getDiaryById(diaryId);
-        Slice<Comment> comments = commentDAO.findAllByDiaryId(diaryId, pageable);
+        List<Comment> comments = commentDAO.findAllByDiaryId(diaryId, pageable);
 
-        return comments.map(this::mapToDTO);
+        List<Comment> hierarchicalComments = convertHierarchy(comments);
+
+        return hierarchicalComments.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private List<Comment> convertHierarchy(List<Comment> comments) {
+        Map<Long, Comment> map = new HashMap<>();
+        List<Comment> parentComments = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            if (comment.getParentComment() != null) {
+                // 부모 댓글이 있는 경우
+                Comment parentComment = map.get(comment.getParentComment().getId());
+                if (parentComment != null) {
+                    parentComment.getChildComments().add(comment);
+                }
+            } else {
+                // 부모 댓글이 없는 경우
+                parentComments.add(comment);
+            }
+            map.put(comment.getId(), comment);
+        }
+
+        return parentComments;
     }
 
     private CommentResponseDTO mapToDTO(Comment comment) {
