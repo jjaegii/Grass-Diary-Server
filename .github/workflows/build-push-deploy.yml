@@ -76,7 +76,6 @@ jobs:
       K3S_USER: ${{ secrets.K3S_USER }}
       K3S_PRIVATE_KEY: ${{ secrets.K3S_PRIVATE_KEY }}
       K3S_HOST: ${{ secrets.K3S_HOST }}
-      IMAGE_TAG: ${{ env.IMAGE_TAG }}
 
     steps:
       - name: Setup SSH key
