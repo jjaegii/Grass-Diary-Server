@@ -78,6 +78,7 @@ jobs:
       K3S_HOST: ${{ secrets.K3S_HOST }}
 
     steps:
+      - uses: actions/checkout@v2
       - name: Setup SSH key
         run: |
           echo "${K3S_PRIVATE_KEY}" > private_key.pem
