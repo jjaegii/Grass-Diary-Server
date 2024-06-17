@@ -1,4 +1,4 @@
-name: Build Gradle And Deploy to EC2 Instance
+name: Build Gradle And Deploy to K3s
 
 on:
   push:
@@ -46,50 +46,55 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Docker build and push
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/arm64 -t yeseulhong/grass-diary:latest --push .
+          docker buildx build --platform linux/arm64 -t yeseulhong/grass-diary:${GITHUB_SHA} --push .
+          echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
 
-  deploySERVER:
-      needs: docker-build
-      runs-on: ubuntu-latest
-      env:
-        USER: ${{ secrets.SERVER_USER }}
-        PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
-        HOST: ${{ secrets.SERVER_HOST }}
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        JWT_ACCESS_SECRET_KEY: ${{ secrets.JWT_ACCESS_SECRET_KEY }}
-        JWT_REFRESH_SECRET_KEY: ${{ secrets.JWT_REFRESH_SECRET_KEY }}
-        DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
-        DB_USER_ID: ${{ secrets.DB_USER_ID }}
-        DB_USER_PW: ${{ secrets.DB_USER_PW }}
-        S3_ACCESS_PUBLIC_KEY: ${{ secrets.S3_ACCESS_PUBLIC_KEY }}
-        S3_ACCESS_SECRET_KEY: ${{ secrets.S3_ACCESS_SECRET_KEY }}
-        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-
-      steps:
-      - name: deployServer
+  update-secrets:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
         run: |
-          echo "$PRIVATE_KEY" >> private_key.pem
-          chmod 400 private_key.pem
-          ssh -i private_key.pem  -o StrictHostKeyChecking=no $USER@$HOST "
-            CONTAINERS=\$(docker ps --filter \"publish=8080-8080\" -q);
-            
-            if [ ! -z \"\$CONTAINERS\" ]; then
-                docker stop \$CONTAINERS && docker rm \$CONTAINERS;
-            fi
-            
-            docker pull yeseulhong/grass-diary:latest;
-            docker run -d -p 8080:8080 \
-              -e GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID \
-              -e GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET \
-              -e JWT_ACCESS_SECRET_KEY=$JWT_ACCESS_SECRET_KEY \
-              -e JWT_REFRESH_SECRET_KEY=$JWT_REFRESH_SECRET_KEY \
-              -e DB_SERVER_URL=$DB_SERVER_URL \
-              -e DB_USER_ID=$DB_USER_ID \
-              -e DB_USER_PW=$DB_USER_PW \
-              -e S3_ACCESS_PUBLIC_KEY=$S3_ACCESS_PUBLIC_KEY \
-              -e S3_ACCESS_SECRET_KEY=$S3_ACCESS_SECRET_KEY \
-              -e S3_BUCKET_NAME=$S3_BUCKET_NAME \
-              yeseulhong/grass-diary:latest"
+          echo "${{ secrets.K3S_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Update Kubernetes Secrets
+        run: |
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.K3S_USER }}@${{ secrets.K3S_HOST }} "
+            kubectl create secret generic google-secrets --from-literal=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} --from-literal=GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} --dry-run=client -o yaml | kubectl apply -f -
+            kubectl create secret generic jwt-secrets --from-literal=JWT_ACCESS_SECRET_KEY=${{ secrets.JWT_ACCESS_SECRET_KEY }} --from-literal=JWT_REFRESH_SECRET_KEY=${{ secrets.JWT_REFRESH_SECRET_KEY }} --dry-run=client -o yaml | kubectl apply -f -
+            kubectl create secret generic db-secrets --from-literal=DB_SERVER_URL=${{ secrets.DB_SERVER_URL }} --from-literal=DB_USER_ID=${{ secrets.DB_USER_ID }} --from-literal=DB_USER_PW=${{ secrets.DB_USER_PW }} --dry-run=client -o yaml | kubectl apply -f -
+            kubectl create secret generic s3-secrets --from-literal=S3_ACCESS_PUBLIC_KEY=${{ secrets.S3_ACCESS_PUBLIC_KEY }} --from-literal=S3_ACCESS_SECRET_KEY=${{ secrets.S3_ACCESS_SECRET_KEY }} --from-literal=S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} --dry-run=client -o yaml | kubectl apply -f -
+          "
+
+  deployK3s:
+    needs: update-secrets
+    runs-on: ubuntu-latest
+    env:
+      K3S_USER: ${{ secrets.K3S_USER }}
+      K3S_PRIVATE_KEY: ${{ secrets.K3S_PRIVATE_KEY }}
+      K3S_HOST: ${{ secrets.K3S_HOST }}
+      IMAGE_TAG: ${{ env.IMAGE_TAG }}
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          echo "${K3S_PRIVATE_KEY}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Copy Kubernetes Manifests
+        run: |
+          sed -i "s|yeseulhong/grass-diary:.*|yeseulhong/grass-diary:${IMAGE_TAG}|g" k3s/deployment.yaml
+          scp -i private_key.pem -o StrictHostKeyChecking=no k3s/deployment.yaml k3s/service.yaml k3s/ingress.yaml ${K3S_USER}@${K3S_HOST}:~/
+
+      - name: Deploy to K3s
+        run: |
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${K3S_USER}@${K3S_HOST} "
+            kubectl apply -f ~/deployment.yaml
+            kubectl apply -f ~/service.yaml
+            kubectl apply -f ~/ingress.yaml
+          "
