@@ -83,13 +83,10 @@ jobs:
         run: |
           echo "${K3S_PRIVATE_KEY}" > private_key.pem
           chmod 600 private_key.pem
-      - name: Prepare deployment file
-        run: |
-          export IMAGE_TAG=${{ steps.docker_build.outputs.image_tag }}
-          envsubst < k3s/deployment.yaml > k3s/deployment.yaml.out
       
       - name: Copy Kubernetes Manifests
         run: |
+          sed -i "s|yeseulhong/grass-diary:.*|yeseulhong/grass-diary:${{ steps.docker_build.outputs.image_tag }}|g" k3s/deployment.yaml
           scp -i private_key.pem -o StrictHostKeyChecking=no k3s/deployment.yaml k3s/service.yaml k3s/ingress.yaml ${K3S_USER}@${K3S_HOST}:~/
 
       - name: Deploy to K3s
