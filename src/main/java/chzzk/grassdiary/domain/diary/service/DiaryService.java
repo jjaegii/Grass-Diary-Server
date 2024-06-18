@@ -53,17 +53,16 @@ public class DiaryService {
     @Transactional
     public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto, MultipartFile image) {
         Member member = getMemberById(id);
-        Diary diary = saveDiary(requestDto, member);
+        Diary diary = saveDiary(requestDto, member, image != null);
         saveTags(requestDto.getHashtags(), member, diary);
 
         int rewardPoint = makeRewardPoint();
         saveRewardPointAndHistory(member, rewardPoint);
 
-        if (hasImage(requestDto.getHasImage(), image)) {
-            //TODO: 만약 hasImage가 true인데 image가 비었다면 FE에게 에러 메시지 보낼 것
-            return sendSaveResponseWithImage(diary, image);
+        if (image == null) {
+            return new DiarySaveResponseDTO(diary.getId(), false, "");
         }
-        return new DiarySaveResponseDTO(diary.getId(), false, "");
+        return sendSaveResponseWithImage(diary, image);
     }
 
     private DiarySaveResponseDTO sendSaveResponseWithImage(Diary diary, MultipartFile image) {
@@ -77,7 +76,7 @@ public class DiaryService {
         validateUpdateDate(diary);
         updateTags(diary, requestDto.getHashtags());
 
-        boolean currentHasImage = requestDto.getHasImage();
+        boolean currentHasImage = !(image == null);
         String imagePath = updateDiaryImage(currentHasImage, image, diary);
 
         return updateDiary(requestDto, diary, currentHasImage, imagePath);
@@ -101,16 +100,16 @@ public class DiaryService {
     }
 
     @Transactional(readOnly = true)
-    public DiaryDTO findById(Long diaryId, Long logInMemberId) {
+    public DiaryDetailDTO findById(Long diaryId, Long logInMemberId) {
         Diary diary = getDiaryById(diaryId);
         List<TagList> tags = getTagsByDiary(diaryId);
         boolean isLikedByLoginMember = isDiaryLikedByLoginMember(diaryId, logInMemberId);
 
-        return DiaryDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
+        return DiaryDetailDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
     }
 
     @Transactional(readOnly = true)
-    public Page<DiaryDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
+    public Page<DiaryDetailDTO> findAll(Pageable pageable, Long memberId, Long logInMemberId) {
         getMemberById(memberId);
 
         return diaryDAO.findDiaryByMemberId(memberId, pageable)
@@ -118,12 +117,12 @@ public class DiaryService {
                     List<TagList> tags = getTagsByDiary(diary.getId());
                     String imageURL = getImageURL(diary.getHasImage(), diary.getId());
                     boolean isLiked = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
-                    return DiaryDTO.from(diary, tags, isLiked, imageURL);
+                    return DiaryDetailDTO.from(diary, tags, isLiked, imageURL);
                 });
     }
 
     @Transactional(readOnly = true)
-    public DiaryDTO findByDate(Long id, String date, Long logInMemberId) {
+    public DiaryDetailDTO findByDate(Long id, String date, Long logInMemberId) {
         LocalDate localDate = LocalDate.parse(date);
         LocalDateTime startOfDay = localDate.atStartOfDay();
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
@@ -138,7 +137,7 @@ public class DiaryService {
         List<TagList> tags = getTagsByDiary(diary.getId());
         boolean isLikedByLogInMember = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
 
-        return DiaryDTO.from(
+        return DiaryDetailDTO.from(
                 diary,
                 tags,
                 isLikedByLogInMember,
@@ -185,8 +184,8 @@ public class DiaryService {
                 .orElseThrow(() -> new SystemException(ClientErrorCode.DIARY_NOT_FOUND_ERR));
     }
 
-    private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member) {
-        return diaryDAO.save(requestDto.toEntity(member));
+    private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member, Boolean hasImage) {
+        return diaryDAO.save(requestDto.toEntity(member, hasImage));
     }
 
     private void saveTags(List<String> hashtags, Member member, Diary diary) {
@@ -224,10 +223,6 @@ public class DiaryService {
         if (rewardHistory.getId() == null) {
             throw new SystemException(ServerErrorCode.REWARD_HISTORY_SAVE_FAILED);
         }
-    }
-
-    private boolean hasImage(Boolean hasImage, MultipartFile file) {
-        return hasImage != null && hasImage && file.getContentType().equals("image/jpeg");
     }
 
     private void validateUpdateDate(Diary diary) {

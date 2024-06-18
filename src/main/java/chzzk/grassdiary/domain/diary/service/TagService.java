@@ -7,7 +7,7 @@ import chzzk.grassdiary.domain.diary.entity.tag.MemberTags;
 import chzzk.grassdiary.domain.diary.entity.tag.MemberTagsDAO;
 import chzzk.grassdiary.domain.diary.entity.tag.TagList;
 import chzzk.grassdiary.domain.diary.entity.tag.TagListDAO;
-import chzzk.grassdiary.domain.diary.dto.DiaryDTO;
+import chzzk.grassdiary.domain.diary.dto.DiaryDetailDTO;
 import chzzk.grassdiary.domain.diary.dto.TagDTO;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class TagService {
     /**
      * 유저의 다이어리 태그로 다이어리 검색
      */
-    public List<DiaryDTO> findByHashTagId(Long memberId, Long tagId, Long logInMemberId) {
+    public List<DiaryDetailDTO> findByHashTagId(Long memberId, Long tagId, Long logInMemberId) {
         List<Diary> diaries = diaryTagDAO.findByMemberIdAndTagId(memberId, tagId);
 
         return diaries.stream()
@@ -53,7 +53,7 @@ public class TagService {
                             .toList();
                     boolean isLiked = diaryLikeDAO.findByDiaryIdAndMemberId(diary.getId(), logInMemberId).isPresent();
 
-                    return DiaryDTO.from(diary, tags, isLiked, getImageURL(diary.getHasImage(), diary.getId()));
+                    return DiaryDetailDTO.from(diary, tags, isLiked, getImageURL(diary.getHasImage(), diary.getId()));
                 })
                 .collect(Collectors.toList());
     }
