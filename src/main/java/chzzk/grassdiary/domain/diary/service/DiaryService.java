@@ -76,7 +76,7 @@ public class DiaryService {
         validateUpdateDate(diary);
         updateTags(diary, requestDto.getHashtags());
 
-        boolean currentHasImage = !(image == null);
+        boolean currentHasImage = requestDto.getHasImage();
         String imagePath = updateDiaryImage(currentHasImage, image, diary);
 
         return updateDiary(requestDto, diary, currentHasImage, imagePath);
@@ -283,11 +283,11 @@ public class DiaryService {
 
     private String updateDiaryImage(boolean currentHasImage, MultipartFile image, Diary diary) {
         boolean originalHasImage = Boolean.TRUE.equals(diary.getHasImage());
-        if (currentHasImage) {
-            return diaryImageService.updateImage(originalHasImage, image, FileFolder.PERSONAL_DIARY, diary);
-        }
         if (originalHasImage) {
             diaryImageService.deleteImage(diary);
+        }
+        if (currentHasImage) {
+            return diaryImageService.updateImage(originalHasImage, image, FileFolder.PERSONAL_DIARY, diary);
         }
         return "";
     }
