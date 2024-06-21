@@ -42,9 +42,9 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDTO update(Long CommentId, CommentUpdateRequestDTO requestDTO, Long logInMemberId) {
+    public CommentResponseDTO update(Long commentId, CommentUpdateRequestDTO requestDTO, Long logInMemberId) {
         Member member = getMemberById(logInMemberId);
-        Comment comment = getCommentById(CommentId);
+        Comment comment = getCommentById(commentId);
         validateCommentAuthor(member, comment);
         comment.update(requestDTO.content());
 
@@ -52,9 +52,9 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDeleteResponseDTO delete(Long CommentId, Long logInMemberId) {
+    public CommentDeleteResponseDTO delete(Long commentId, Long logInMemberId) {
         Member member = getMemberById(logInMemberId);
-        Comment comment = getCommentById(CommentId);
+        Comment comment = getCommentById(commentId);
         validateCommentAuthor(member, comment);
         validateNotDeleted(comment);
 
