@@ -20,7 +20,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build --daemon --parallel
       - name: Upload Jar
         uses: actions/upload-artifact@v3
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Docker build and push
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/arm64 -t yeseulhong/grass-diary:${{ github.sha }} --push .
+          docker buildx build --platform linux/arm64,linux/amd64 -t yeseulhong/grass-diary:${{ github.sha }} --push .
           echo "::set-output name=image_tag::${{ github.sha }}"
 
   update-secrets:
