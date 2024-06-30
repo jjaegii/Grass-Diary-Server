@@ -86,10 +86,10 @@ jobs:
       
       - name: Copy Kubernetes Manifests
         run: |
-          sed -i 's/\${IMAGE_TAG}/'"${{ github.sha }}"'/g' k3s/deployment.yaml
-          scp -i private_key.pem -o StrictHostKeyChecking=no k3s/deployment.yaml k3s/service.yaml k3s/ingress.yaml ${K3S_USER}@${K3S_HOST}:~/
+          sed -i 's/\${IMAGE_TAG}/'"${{ github.sha }}"'/g' k8s/deployment.yaml
+          scp -i private_key.pem -o StrictHostKeyChecking=no k8s/deployment.yaml k8s/service.yaml k8s/ingress.yaml ${K3S_USER}@${K3S_HOST}:~/
 
-      - name: Deploy to K3s
+      - name: Deploy to K8s
         run: |
           ssh -i private_key.pem -o StrictHostKeyChecking=no ${K3S_USER}@${K3S_HOST} "
             kubectl apply -f ~/deployment.yaml
