@@ -1,0 +1,22 @@
+package chzzk.grassdiary.domain.comment.dto;
+
+import chzzk.grassdiary.domain.comment.entity.Comment;
+import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.domain.member.entity.Member;
+
+public record CommentSaveRequestDTO(
+        Long memberId,
+        Long diaryId,
+        String content,
+        Long parentCommentId
+) {
+    public Comment toEntity(Member member, Diary diary, Comment parentComment) {
+        return Comment.builder()
+                .member(member)
+                .diary(diary)
+                .content(content)
+                .parentComment(parentComment)
+                .build();
+    }
+}
+

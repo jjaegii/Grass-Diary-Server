@@ -1,11 +1,11 @@
 //package chzzk.grassdiary;
 //
-//import chzzk.grassdiary.domain.color.ColorCode;
-//import chzzk.grassdiary.domain.color.ConditionLevel;
-//import chzzk.grassdiary.domain.diary.Diary;
-//import chzzk.grassdiary.domain.diary.DiaryLike;
-//import chzzk.grassdiary.domain.member.Member;
-//import chzzk.grassdiary.domain.member.MemberPurchasedColor;
+//import chzzk.grassdiary.domain.member.entity.color.ColorCode;
+//import chzzk.grassdiary.domain.member.entity.color.ConditionLevel;
+//import chzzk.grassdiary.domain.diary.entity.Diary;
+//import chzzk.grassdiary.domain.diary.entity.DiaryLike;
+//import chzzk.grassdiary.domain.member.entity.Member;
+//import chzzk.grassdiary.domain.member.entity.MemberPurchasedColor;
 //import jakarta.persistence.EntityManager;
 //import jakarta.transaction.Transactional;
 //import org.junit.jupiter.api.DisplayName;
