@@ -1,8 +1,8 @@
-name: Build Gradle And Deploy to K3s
+name: Build Gradle And Deploy to K8S
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "release" ]
 
 jobs:
   jar-build:
@@ -69,7 +69,7 @@ jobs:
             kubectl create secret generic s3-secrets --from-literal=S3_ACCESS_PUBLIC_KEY=${{ secrets.S3_ACCESS_PUBLIC_KEY }} --from-literal=S3_ACCESS_SECRET_KEY=${{ secrets.S3_ACCESS_SECRET_KEY }} --from-literal=S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} --dry-run=client -o yaml | kubectl apply -f -
           "
 
-  deployK3s:
+  deployK8S:
     needs: update-secrets
     runs-on: ubuntu-latest
     env:
@@ -95,4 +95,3 @@ jobs:
             kubectl apply -f ~/deployment.yaml
             kubectl apply -f ~/service.yaml
             kubectl apply -f ~/ingress.yaml
-          "
