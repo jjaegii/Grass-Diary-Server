@@ -3,6 +3,8 @@ package chzzk.grassdiary.domain.diary.dto.browse;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 
 public record DiaryPreviewDTO(
@@ -17,7 +19,7 @@ public record DiaryPreviewDTO(
         return diaries.stream()
                 .map(d -> new DiaryPreviewDTO(
                         d.getId(),
-                        d.getContent(),
+                        trimContent(d.getContent()),
                         d.getDiaryLikes().size(),
                         d.getMember().getId(),
                         d.getMember().getNickname(),
@@ -29,7 +31,7 @@ public record DiaryPreviewDTO(
     private static DiaryPreviewDTO toPreviewDiary(Diary diary) {
         return new DiaryPreviewDTO(
                 diary.getId(),
-                diary.getContent(),
+                trimContent(diary.getContent()),
                 diary.getDiaryLikes().size(),
                 diary.getMember().getId(),
                 diary.getMember().getNickname(),
@@ -42,6 +44,12 @@ public record DiaryPreviewDTO(
         return diaries.stream()
                 .map(DiaryPreviewDTO::toPreviewDiary)
                 .toList();
+    }
+
+    private static String trimContent(String content) {
+        return Optional.ofNullable(content)
+                .map(c -> c.length() > 250 ? c.substring(0, 250) + "..." : c)
+                .orElse("");
     }
 
 }
