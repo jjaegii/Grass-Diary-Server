@@ -5,12 +5,12 @@ import java.util.List;
 
 public record AllLatestDiariesDto(
         LatestMetaDto meta,
-        List<LatestDiaryDto> diaries
+        List<DiaryPreviewDTO> diaries
 ) {
     public static AllLatestDiariesDto of(List<Diary> diaries, boolean hasMore) {
         return new AllLatestDiariesDto(
                 LatestMetaDto.of(diaries.size(), hasMore),
-                LatestDiaryDto.toLatestDiariesDto(diaries)
+                DiaryPreviewDTO.toLatestDiariesDto(diaries)
         );
     }
 }

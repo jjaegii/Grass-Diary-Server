@@ -127,3 +127,16 @@ Type(File or function): Subject
 
 
 </details>
+
+<details>
+    <summary>
+      Branch convention
+    </summary>
+
+| branch  | 설명                    |
+|:-------:|-----------------------|
+| release | 배포 되어 있는 브랜치          |
+|   dev   | 다음 릴리즈 기간까지 개발 중인 브랜치 |
+
+
+</details>
