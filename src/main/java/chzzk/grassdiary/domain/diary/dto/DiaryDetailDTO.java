@@ -9,6 +9,7 @@ import java.util.List;
 
 public record DiaryDetailDTO(
         Long diaryId,
+        Long memberId,
         String content,
         List<TagList> tags,
         Float transparency,
@@ -22,6 +23,7 @@ public record DiaryDetailDTO(
     public static DiaryDetailDTO from(Diary diary, List<TagList> tags, boolean isLikedByLogInMember, List<ImageDTO> image) {
         return new DiaryDetailDTO(
                 diary.getId(),
+                diary.getMember().getId(),
                 diary.getContent(),
                 tags,
                 diary.getConditionLevel().getTransparency(),
