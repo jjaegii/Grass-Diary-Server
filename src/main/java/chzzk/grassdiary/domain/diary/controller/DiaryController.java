@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,19 +28,17 @@ public class DiaryController {
     @PostMapping("/{memberId}")
     public DiarySaveResponseDTO save(
             @PathVariable(name = "memberId") Long memberId,
-            @RequestPart DiarySaveRequestDTO requestDto,
-            @RequestPart(required = false) MultipartFile image
+            @RequestBody DiarySaveRequestDTO requestDto
     ) {
-        return diaryService.save(memberId, requestDto, image);
+        return diaryService.save(memberId, requestDto);
     }
 
     @PatchMapping("/{diaryId}")
     public DiarySaveResponseDTO update(
             @PathVariable(name = "diaryId") Long diaryId,
-            @RequestPart DiaryUpdateRequestDTO requestDto,
-            @RequestPart(required = false) MultipartFile image
+            @RequestBody DiaryUpdateRequestDTO requestDto
     ) {
-        return diaryService.update(diaryId, requestDto, image);
+        return diaryService.update(diaryId, requestDto);
     }
 
     @DeleteMapping("/{diaryId}")
