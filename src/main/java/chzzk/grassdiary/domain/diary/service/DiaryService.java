@@ -1,5 +1,7 @@
 package chzzk.grassdiary.domain.diary.service;
 
+import chzzk.grassdiary.domain.image.dto.ImageDTO;
+import chzzk.grassdiary.domain.image.entity.DiaryToImageDAO;
 import chzzk.grassdiary.domain.image.service.DiaryImageService;
 import chzzk.grassdiary.domain.diary.dto.*;
 import chzzk.grassdiary.domain.diary.entity.Diary;
@@ -20,7 +22,6 @@ import chzzk.grassdiary.domain.reward.RewardType;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import chzzk.grassdiary.global.common.response.ServerErrorCode;
-import chzzk.grassdiary.global.util.file.FileFolder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,13 +29,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -49,37 +50,28 @@ public class DiaryService {
     private final RewardHistoryDAO rewardHistoryDAO;
 
     private final DiaryImageService diaryImageService;
+    private final DiaryToImageDAO diaryToImageDAO;
 
     @Transactional
-    public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto, MultipartFile image) {
+    public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto) {
         Member member = getMemberById(id);
-        Diary diary = saveDiary(requestDto, member, image != null);
+        // 게시글 저장, 이미지가 있다면 매핑값 저장
+        Diary diary = saveDiary(requestDto, member);
         saveTags(requestDto.getHashtags(), member, diary);
 
         int rewardPoint = makeRewardPoint();
         saveRewardPointAndHistory(member, rewardPoint);
 
-        if (image == null) {
-            return new DiarySaveResponseDTO(diary.getId(), false, "");
-        }
-        return sendSaveResponseWithImage(diary, image);
-    }
-
-    private DiarySaveResponseDTO sendSaveResponseWithImage(Diary diary, MultipartFile image) {
-        String imagePath = diaryImageService.uploadDiaryImage(image, FileFolder.PERSONAL_DIARY, diary);
-        return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
+        return new DiarySaveResponseDTO(diary.getId());
     }
 
     @Transactional
-    public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto, MultipartFile image) {
-        Diary diary = getDiaryById(id);
-        validateUpdateDate(diary);
-        updateTags(diary, requestDto.getHashtags());
+    public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto) {
+        Diary originalDiary = getDiaryById(id);
+        validateUpdateDate(originalDiary);
+        updateTags(originalDiary, requestDto.getHashtags());
 
-        boolean currentHasImage = requestDto.getHasImage();
-        String imagePath = updateDiaryImage(currentHasImage, image, diary);
-
-        return updateDiary(requestDto, diary, currentHasImage, imagePath);
+        return updateDiary(requestDto, originalDiary);
     }
 
     /**
@@ -94,7 +86,7 @@ public class DiaryService {
         Diary diary = getDiaryById(diaryId);
         removeExistingTags(diary);
         removeDiaryLikes(diaryId);
-        removeDiaryImage(diary);
+        diaryImageService.deleteImageAndMapping(diary);
 
         diaryDAO.delete(diary);
     }
@@ -105,7 +97,14 @@ public class DiaryService {
         List<TagList> tags = getTagsByDiary(diaryId);
         boolean isLikedByLoginMember = isDiaryLikedByLoginMember(diaryId, logInMemberId);
 
-        return DiaryDetailDTO.from(diary, tags, isLikedByLoginMember, getImageURL(diary.getHasImage(), diary.getId()));
+        return DiaryDetailDTO.from(diary, tags, isLikedByLoginMember, getImagesByDiary(diaryId));
+    }
+
+    private List<ImageDTO> getImagesByDiary(Long diaryId) {
+        return diaryToImageDAO.findByDiaryId(diaryId)
+                .stream()
+                .map(ImageDTO::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -115,9 +114,8 @@ public class DiaryService {
         return diaryDAO.findDiaryByMemberId(memberId, pageable)
                 .map(diary -> {
                     List<TagList> tags = getTagsByDiary(diary.getId());
-                    String imageURL = getImageURL(diary.getHasImage(), diary.getId());
                     boolean isLiked = isDiaryLikedByLoginMember(diary.getId(), logInMemberId);
-                    return DiaryDetailDTO.from(diary, tags, isLiked, imageURL);
+                    return DiaryDetailDTO.from(diary, tags, isLiked, getImagesByDiary(diary.getId()));
                 });
     }
 
@@ -141,7 +139,7 @@ public class DiaryService {
                 diary,
                 tags,
                 isLikedByLogInMember,
-                getImageURL(diary.getHasImage(), diary.getId())
+                getImagesByDiary(diary.getId())
         );
     }
 
@@ -184,8 +182,16 @@ public class DiaryService {
                 .orElseThrow(() -> new SystemException(ClientErrorCode.DIARY_NOT_FOUND_ERR));
     }
 
-    private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member, Boolean hasImage) {
-        return diaryDAO.save(requestDto.toEntity(member, hasImage));
+    /**
+     * 1. 다이어리 저장
+     * 2. 다이어리에 저장 될 이미지가 있다면 매핑 값 저장
+     */
+    private Diary saveDiary(DiarySaveRequestDTO requestDto, Member member) {
+        Diary diary = diaryDAO.save(requestDto.toEntity(member));
+        if (requestDto.getImageId() != 0) {
+            diaryImageService.mappingImageToDiary(diary, requestDto.getImageId());
+        }
+        return diary;
     }
 
     private void saveTags(List<String> hashtags, Member member, Diary diary) {
@@ -275,31 +281,19 @@ public class DiaryService {
         diaryLikeDAO.deleteAll(diaryLikes);
     }
 
-    private void removeDiaryImage(Diary diary) {
-        if (diary.getHasImage() != null && diary.getHasImage()) {
-            diaryImageService.deleteImage(diary);
-        }
-    }
+    private DiarySaveResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary) {
+        // 1. 기존에 이미지가 있었다면 이미지와 이미지 매핑 값 삭제
+        diaryImageService.deleteImageAndMapping(diary);
 
-    private String updateDiaryImage(boolean currentHasImage, MultipartFile image, Diary diary) {
-        boolean originalHasImage = Boolean.TRUE.equals(diary.getHasImage());
-        if (originalHasImage) {
-            diaryImageService.deleteImage(diary);
+        // 2. 이미지 매핑 값 새로 생성
+        if (requestDto.getImageId() != 0) {
+            diaryImageService.mappingImageToDiary(diary, requestDto.getImageId());
         }
-        if (currentHasImage) {
-            return diaryImageService.updateImage(originalHasImage, image, FileFolder.PERSONAL_DIARY, diary);
-        }
-        return "";
-    }
 
-    private DiarySaveResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary, boolean currentHasImage, String imagePath) {
-        diary.update(requestDto.getContent(), requestDto.getIsPrivate(), requestDto.getHasImage(),
+        diary.update(requestDto.getContent(), requestDto.getIsPrivate(),
                 requestDto.getHasTag(), requestDto.getConditionLevel());
 
-        if (currentHasImage) {
-            return new DiarySaveResponseDTO(diary.getId(), true, imagePath);
-        }
-        return new DiarySaveResponseDTO(diary.getId(), false, "");
+        return new DiarySaveResponseDTO(diary.getId());
     }
 
     // 다이어리에 해당하는 태그 리스트
@@ -316,10 +310,4 @@ public class DiaryService {
         return diaryLikeDAO.findByDiaryIdAndMemberId(diaryId, logInMemberId).isPresent();
     }
 
-    private String getImageURL(Boolean hasImage, Long diaryId) {
-        if (hasImage != null && hasImage) {
-            return diaryImageService.getImageURL(diaryId);
-        }
-        return "";
-    }
 }

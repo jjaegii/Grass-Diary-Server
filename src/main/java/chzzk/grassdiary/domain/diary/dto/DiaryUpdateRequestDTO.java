@@ -15,6 +15,7 @@ public class DiaryUpdateRequestDTO {
     private String content;
     private Boolean isPrivate;
     private Boolean hasImage;
+    private Long imageId;
     private Boolean hasTag;
     private ConditionLevel conditionLevel;
     private List<String> hashtags;
