@@ -235,7 +235,7 @@ public class DiaryService {
         LocalDate createdAt = diary.getCreatedAt().toLocalDate();
         LocalDate today = LocalDateTime.now().toLocalDate();
         if (!createdAt.equals(today)) {
-            throw new SystemException(ClientErrorCode.DIARY_ALREADY_EXISTS);
+            throw new SystemException(ClientErrorCode.PAST_DIARY_MODIFICATION_NOT_ALLOWED);
         }
     }
 

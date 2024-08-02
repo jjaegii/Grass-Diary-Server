@@ -12,7 +12,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     AUTH_SESSION_EXPIRED(440, "AUTH_SESSION_EXPIRED", "세션이 만료되었습니다. 다시 로그인 해주세요."),
 
     MEMBER_NOT_FOUND_ERR(404, "MEMBER_NOT_FOUND_ERR", "요청하신 사용자를 찾을 수 없습니다."),
-    DIARY_ALREADY_EXISTS(409, "DIARY_ALREADY_EXISTS", "이미 해당 날짜에 작성된 일기가 있습니다."),
+    PAST_DIARY_MODIFICATION_NOT_ALLOWED(409, "PAST_DIARY_MODIFICATION_NOT_ALLOWED", "과거의 일기는 수정할 수 없습니다."),
     DIARY_NOT_FOUND_ERR(404, "DIARY_NOT_FOUND_ERR", "요청하신 다이어리를 찾을 수 없습니다."),
     DIARY_LIKE_NOT_FOUND(404, "DIARY_LIKE_NOT_FOUND", "해당 다이어리에 좋아요를 누르지 않았습니다."),
     DIARY_LIKE_ALREADY_EXISTS(409, "DIARY_LIKE_ALREADY_EXISTS", "다이어리에 좋아요를 이미 눌렀습니다."),
