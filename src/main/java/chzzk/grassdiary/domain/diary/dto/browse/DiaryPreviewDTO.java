@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public record DiaryPreviewDTO(
         Long diaryId,
-        String diaryContent,
+        String content,
         int diaryLikeCount,
         Long memberId,
         String nickname,
