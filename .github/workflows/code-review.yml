@@ -20,10 +20,6 @@ jobs:
       run: |
         echo "REVIEW_API_URL=${{ secrets.REVIEW_API_URL }}" >> $GITHUB_ENV
 
-    - name: Print REVIEW_API_URL from GITHUB_ENV
-      run: |
-          echo "REVIEW_API_URL: $REVIEW_API_URL"
-
     - name: API calling for CodeReview
       id: api_call
       run: |
