@@ -1,5 +1,7 @@
 package chzzk.grassdiary.domain.image.controller;
 
+import chzzk.grassdiary.domain.image.service.ImageService;
+import chzzk.grassdiary.global.util.file.FileFolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +10,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +25,28 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/image")
-@Tag(name = "로고 이미지 컨트롤러")
-public class LogoImageController {
+@Tag(name = "이미지 컨트롤러")
+public class ImageController {
+    private final ImageService imageService;
+
     String MAIN_BANNER_URL = "static/images/main_page_exchange_diary.jpg";
     String THEME_SHOP_URL = "static/images/theme_shop.jpg";
+
+    @PostMapping("/diary")
+    public ResponseEntity<?> uploadDiaryImage(
+            @RequestPart MultipartFile image
+    ) {
+        return ResponseEntity.ok()
+                .body(imageService.uploadImage(image, FileFolder.PERSONAL_DIARY));
+    }
+
+    @DeleteMapping("/diary/{diaryId}")
+    public ResponseEntity<?> deleteDiaryImage(
+            @PathVariable Long diaryId
+    ) {
+        imageService.deleteImage(diaryId);
+        return ResponseEntity.ok().build();
+    }
 
     private ResponseEntity<?> sendImage(String mainBannerUrl) throws IOException {
         Resource resource = new ClassPathResource(mainBannerUrl);

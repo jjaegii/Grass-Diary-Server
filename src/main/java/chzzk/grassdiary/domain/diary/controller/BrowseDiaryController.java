@@ -4,7 +4,7 @@ import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import chzzk.grassdiary.domain.diary.service.BrowseDiaryService;
 import chzzk.grassdiary.domain.diary.dto.browse.AllLatestDiariesDto;
-import chzzk.grassdiary.domain.diary.dto.browse.Top10DiariesDto;
+import chzzk.grassdiary.domain.diary.dto.browse.DiaryPreviewDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,12 +32,12 @@ public class BrowseDiaryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Top10DiariesDto.class))})
+                            schema = @Schema(implementation = DiaryPreviewDTO.class))})
     })
-    public ResponseEntity<List<Top10DiariesDto>> showTop10ThisWeek(
+    public ResponseEntity<List<DiaryPreviewDTO>> showTop10ThisWeek(
             @Parameter(hidden = true) @AuthenticatedMember AuthMemberPayload payload
     ) {
-        List<Top10DiariesDto> top10Diaries = browseDiaryService.findTop10DiariesThisWeek();
+        List<DiaryPreviewDTO> top10Diaries = browseDiaryService.findTop10DiariesThisWeek();
         return ResponseEntity.ok(top10Diaries);
     }
 
