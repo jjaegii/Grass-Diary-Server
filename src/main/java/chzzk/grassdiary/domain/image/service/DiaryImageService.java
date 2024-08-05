@@ -19,6 +19,12 @@ public class DiaryImageService {
     private final ImageService imageService;
     private final DiaryToImageDAO diaryToImageDAO;
 
+    public Long getImageIdByDiaryId(Long diaryId) {
+        return diaryToImageDAO.findByDiaryId(diaryId)
+                .map(diaryToImage -> diaryToImage.getImage().getId())
+                .orElse(0L);
+    }
+
     /**
      * FRONT: 이미지 id와 Diary 값을 주면 검색해서 둘을 잇는 값을 추가
      */

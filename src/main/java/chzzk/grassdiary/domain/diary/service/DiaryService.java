@@ -282,12 +282,22 @@ public class DiaryService {
     }
 
     private DiarySaveResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary) {
-        // 1. 기존에 이미지가 있었다면 이미지와 이미지 매핑 값 삭제
-        diaryImageService.deleteImageAndMapping(diary);
+        // 1. 기존 이미지가 있고, 이미지 id 값이 동일하다면 유지
+        Long newImageId = requestDto.getImageId();
+        Long existImageId = diaryImageService.getImageIdByDiaryId(diary.getId());
 
-        // 2. 이미지 매핑 값 새로 생성
-        if (requestDto.getImageId() != 0) {
-            diaryImageService.mappingImageToDiary(diary, requestDto.getImageId());
+        boolean isSameImage = existImageId.equals(newImageId);
+
+        // 2. 기존 이미지와 다르면
+        if (!isSameImage) {
+            if (existImageId != 0) {
+                // 2-1. 기존에 이미지가 있었다면 이미지와 이미지 매핑 값 삭제
+                diaryImageService.deleteImageAndMapping(diary);
+            }
+            if (newImageId != 0) {
+                // 2-2. 이미지 매핑 값 새로 생성
+                diaryImageService.mappingImageToDiary(diary, newImageId);
+            }
         }
 
         diary.update(requestDto.getContent(), requestDto.getIsPrivate(),
