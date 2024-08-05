@@ -61,22 +61,20 @@ public class Diary extends BaseTimeEntity {
     private ConditionLevel conditionLevel;
 
     @Builder
-    protected Diary(Member member, String content, Boolean isPrivate, Boolean hasImage,
+    protected Diary(Member member, String content, Boolean isPrivate,
                     Boolean hasTag, ConditionLevel conditionLevel) {
         this.member = member;
         this.content = content;
         this.isPrivate = isPrivate;
-        this.hasImage = hasImage;
         this.hasTag = hasTag;
         this.conditionLevel = conditionLevel;
         this.setCreatedAt(LocalDateTime.now());
     }
 
-    public void update(String content, Boolean isPrivate, Boolean hasImage, Boolean hasTag,
+    public void update(String content, Boolean isPrivate, Boolean hasTag,
                        ConditionLevel conditionLevel) {
         this.content = content;
         this.isPrivate = isPrivate;
-        this.hasImage = hasImage;
         this.hasTag = hasTag;
         this.conditionLevel = conditionLevel;
     }

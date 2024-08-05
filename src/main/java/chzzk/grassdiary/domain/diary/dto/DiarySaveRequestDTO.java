@@ -14,20 +14,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DiarySaveRequestDTO {
-    private Member member;
     private String content;
     private Boolean isPrivate;
     private Boolean hasTag;
     private ConditionLevel conditionLevel;
     private List<String> hashtags;
+    private Long imageId;
 
     // DTO -> Entity
-    public Diary toEntity(Member member, Boolean hasImage) {
+    public Diary toEntity(Member member) {
         return Diary.builder()
                 .member(member)
                 .content(content)
                 .isPrivate(isPrivate)
-                .hasImage(hasImage)
                 .hasTag(hasTag)
                 .conditionLevel(conditionLevel)
                 .build();

@@ -1,57 +1,44 @@
 package chzzk.grassdiary.domain.image.service;
 
 import chzzk.grassdiary.domain.diary.entity.Diary;
-import chzzk.grassdiary.domain.image.entity.DiaryImage;
-import chzzk.grassdiary.domain.image.entity.DiaryImageDAO;
+import chzzk.grassdiary.domain.image.entity.DiaryToImage;
+import chzzk.grassdiary.domain.image.entity.DiaryToImageDAO;
+import chzzk.grassdiary.domain.image.entity.Image;
+import chzzk.grassdiary.domain.image.entity.ImageDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
-import chzzk.grassdiary.global.util.file.FileFolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class DiaryImageService {
-    // todo: baseURL 전역으로 빼기
-    private static String baseURL = "https://chzzk-image-server.s3.ap-northeast-2.amazonaws.com/";
+    private final ImageDAO imageDAO;
+    private final ImageService imageService;
+    private final DiaryToImageDAO diaryToImageDAO;
 
-    private final DiaryImageDAO diaryImageDAO;
-
-    private final AwsS3Service awsS3Service;
-
-    public String uploadDiaryImage(MultipartFile image, FileFolder category, Diary diary) {
-        if(image.isEmpty()) {
-            throw new SystemException(ClientErrorCode.IMAGE_FILE_EMPTY);
-        }
-
-        String imagePath = awsS3Service.uploadBucket(image, category);
-        diaryImageDAO.save(new DiaryImage(diary, imagePath));
-        return imagePath;
+    public Long getImageIdByDiaryId(Long diaryId) {
+        return diaryToImageDAO.findByDiaryId(diaryId)
+                .map(diaryToImage -> diaryToImage.getImage().getId())
+                .orElse(0L);
     }
 
-    public String updateImage(Boolean originalHasImage, MultipartFile image, FileFolder category, Diary diary) {
-        if (!originalHasImage) {
-            return uploadDiaryImage(image, category, diary);
-        }
-        DiaryImage diaryImage = diaryImageDAO.findByDiaryId(diary.getId());
-        String originalImagePath = diaryImage.getImagePath();
-        awsS3Service.deleteImage(originalImagePath);
+    /**
+     * FRONT: 이미지 id와 Diary 값을 주면 검색해서 둘을 잇는 값을 추가
+     */
+    public void mappingImageToDiary(Diary diary, Long imageId) {
+        Image uploadedImage = imageDAO.findById(imageId)
+                .orElseThrow(() -> new SystemException(ClientErrorCode.IMAGE_NOT_FOUND_ERR));
 
-        String newImagePath = awsS3Service.uploadBucket(image, category);
-        diaryImage.updateImagePath(newImagePath);
-        return newImagePath;
+        diaryToImageDAO.save(new DiaryToImage(diary, uploadedImage));
     }
 
-    public void deleteImage(Diary diary) {
-        DiaryImage diaryImage = diaryImageDAO.findByDiaryId(diary.getId());
-        awsS3Service.deleteImage(diaryImage.getImagePath());
-        diaryImageDAO.delete(diaryImage);
-    }
-
-    public String getImageURL(Long diaryId) {
-        return baseURL + diaryImageDAO.findByDiaryId(diaryId).getImagePath();
+    public void deleteImageAndMapping(Diary diary) {
+        diaryToImageDAO.findByDiaryId(diary.getId()).ifPresent(diaryImage -> {
+            imageService.deleteImage(diaryImage.getId());
+            diaryToImageDAO.delete(diaryImage);
+        });
     }
 }
