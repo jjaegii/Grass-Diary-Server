@@ -51,7 +51,7 @@ jobs:
       run: |
             ESCAPED_DIFF=$(echo "$DIFF_CONTENT" | jq -sRr @json)
             REQUEST_BODY=$(jq -n \
-              --arg model "Meta-Llama-3_1-8B-Instruct_Q4_K_M" \
+              --arg model "${{ secrets.REVIEW_MODEL_NAME }}" \
               --arg prompt "Review the following code changes and provide feedback:$ESCAPED_DIFF" \
               '{model: $model, prompt: $prompt, stream: false}')
             FULL_RESPONSE=$(curl -X POST ${REVIEW_API_URL} \
