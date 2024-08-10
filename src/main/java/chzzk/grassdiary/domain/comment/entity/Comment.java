@@ -54,13 +54,17 @@ public class Comment extends BaseTimeEntity {
 
     private boolean deleted;
 
+    @Column(nullable = false)
+    private int depth;
+
     @Builder
-    protected Comment(Member member, Diary diary, String content, Comment parentComment) {
+    protected Comment(Member member, Diary diary, String content, Comment parentComment, int depth) {
         this.member = member;
         this.diary = diary;
         this.content = content;
         this.parentComment = parentComment;
         this.deleted = false;
+        this.depth = depth;
     }
 
     public void update(String content) {

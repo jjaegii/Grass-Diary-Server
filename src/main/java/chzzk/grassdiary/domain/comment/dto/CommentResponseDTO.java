@@ -14,6 +14,7 @@ public record CommentResponseDTO(
         boolean deleted,
         String createdDate,
         String createdAt,
+        int depth,
         List<CommentResponseDTO> childComments
 ) {
     public static CommentResponseDTO from(Comment comment) {
@@ -24,6 +25,7 @@ public record CommentResponseDTO(
                 comment.isDeleted(),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
                 comment.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")),
+                comment.getDepth(),
                 comment.getChildComments().stream().map(CommentResponseDTO::from).collect(Collectors.toList())
         );
     }
@@ -36,6 +38,7 @@ public record CommentResponseDTO(
                 true,
                 null,
                 null,
+                comment.getDepth(),
                 comment.getChildComments().stream().map(CommentResponseDTO::from).collect(Collectors.toList())
         );
     }

@@ -76,10 +76,7 @@ public class DiaryService {
     }
 
     /**
-     * diaryId를 이용해서 diaryTag, MemberTag 를 찾아내기
-     * diaryTag 삭제 -> deleteAllInBatch 고려해보기
-     * MemberTag 삭제
-     * 해당 일기의 좋아요 찾기 및 삭제
+     * diaryId를 이용해서 diaryTag, MemberTag 를 찾아내기 diaryTag 삭제 -> deleteAllInBatch 고려해보기 MemberTag 삭제 해당 일기의 좋아요 찾기 및 삭제
      * 이미지 삭제
      */
     @Transactional
@@ -275,6 +272,7 @@ public class DiaryService {
             }
         }
     }
+
     private void removeDiaryLikes(Long diaryId) {
         List<DiaryLike> diaryLikes = diaryLikeDAO.findAllByDiaryId(diaryId);
         diaryLikeDAO.deleteAll(diaryLikes);

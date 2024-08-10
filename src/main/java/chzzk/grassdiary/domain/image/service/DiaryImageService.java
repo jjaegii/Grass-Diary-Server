@@ -37,7 +37,7 @@ public class DiaryImageService {
 
     public void deleteImageAndMapping(Diary diary) {
         diaryToImageDAO.findByDiaryId(diary.getId()).ifPresent(diaryImage -> {
-            imageService.deleteImage(diaryImage.getId());
+            imageService.deleteImage(diaryImage.getImage().getId());
             diaryToImageDAO.delete(diaryImage);
         });
     }

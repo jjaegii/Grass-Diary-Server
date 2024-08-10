@@ -10,12 +10,13 @@ public record CommentSaveRequestDTO(
         String content,
         Long parentCommentId
 ) {
-    public Comment toEntity(Member member, Diary diary, Comment parentComment) {
+    public Comment toEntity(Member member, Diary diary, Comment parentComment, int depth) {
         return Comment.builder()
                 .member(member)
                 .diary(diary)
                 .content(content)
                 .parentComment(parentComment)
+                .depth(depth)
                 .build();
     }
 }
