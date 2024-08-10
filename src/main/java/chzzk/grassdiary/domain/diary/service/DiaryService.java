@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -216,9 +217,7 @@ public class DiaryService {
     }
 
     private int makeRewardPoint() {
-        long seed = System.currentTimeMillis();
-        Random random = new Random(seed);
-        return random.nextInt(10) + 1;
+        return 50 + (ThreadLocalRandom.current().nextInt(6) * 10);
     }
 
     private void saveRewardPointAndHistory(Member member, int rewardPoint) {
