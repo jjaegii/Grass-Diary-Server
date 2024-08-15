@@ -16,7 +16,7 @@ public record DiaryDetailDTO(
         Boolean isPrivate,
         Integer likeCount,
         Boolean isLikedByLogInMember,
-        Integer commentCount,
+        int commentCount,
         String createdDate,
         String createdAt,
         List<ImageDTO> image
