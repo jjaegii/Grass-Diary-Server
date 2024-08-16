@@ -16,6 +16,7 @@ public record DiaryDetailDTO(
         Boolean isPrivate,
         Integer likeCount,
         Boolean isLikedByLogInMember,
+        int commentCount,
         String createdDate,
         String createdAt,
         List<ImageDTO> image
@@ -30,6 +31,7 @@ public record DiaryDetailDTO(
                 diary.getIsPrivate(),
                 diary.getDiaryLikes().size(),
                 isLikedByLogInMember,
+                diary.getComments().size(),
                 diary.getCreatedAt().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")),
                 diary.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")),
                 image

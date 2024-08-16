@@ -35,7 +35,10 @@ public class CommentService {
         Member member = getMemberById(logInMemberId);
         Diary diary = getDiaryById(diaryId);
         Comment parentComment = getParentCommentById(requestDTO.parentCommentId());
-        Comment comment = requestDTO.toEntity(member, diary, parentComment);
+
+        int commentDepth = calculateCommentDepth(parentComment);
+        validateCommentDepth(commentDepth);
+        Comment comment = requestDTO.toEntity(member, diary, parentComment, commentDepth);
         commentDAO.save(comment);
 
         return CommentResponseDTO.from(comment);
@@ -125,6 +128,13 @@ public class CommentService {
                 .orElseThrow(() -> new SystemException(ClientErrorCode.COMMENT_NOT_FOUND_ERR));
     }
 
+    private int calculateCommentDepth(Comment parentComment) {
+        if (parentComment == null) {
+            return 0;
+        }
+        return parentComment.getDepth() + 1;
+    }
+
     private void validateCommentAuthor(Member member, Comment comment) {
         if (!member.equals(comment.getMember())) {
             throw new SystemException(ClientErrorCode.AUTHOR_MISMATCH_ERR);
@@ -134,6 +144,12 @@ public class CommentService {
     private void validateNotDeleted(Comment comment) {
         if (comment.isDeleted()) {
             throw new SystemException(ClientErrorCode.COMMENT_ALREADY_DELETED_ERR);
+        }
+    }
+
+    private void validateCommentDepth(int depth) {
+        if (depth > 1) {
+            throw new SystemException(ClientErrorCode.COMMENT_DEPTH_EXCEEDED_ERR);
         }
     }
 }

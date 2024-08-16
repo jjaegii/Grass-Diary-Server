@@ -7,7 +7,7 @@ on:
       - dev
 
 jobs:
-  deploy:
+  code_review:
     runs-on: ubuntu-latest
 
     steps:

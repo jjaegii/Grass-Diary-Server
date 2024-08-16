@@ -23,6 +23,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     IMAGE_MAPPING_NOT_FOUND_ERR(400, "IMAGE_MAPPING_NOT_FOUND_ERR", "해당 이미지를 찾을 수 없습니다.(이미지 등록 값 없음)"),
     AUTHOR_MISMATCH_ERR(403, "AUTHOR_MISMATCH_ERR", "작성자가 아닙니다."),
     COMMENT_ALREADY_DELETED_ERR(400, "COMMENT_ALREADY_DELETED_ERR", "이미 삭제된 댓글입니다."),
+    COMMENT_DEPTH_EXCEEDED_ERR(400, "COMMENT_DEPTH_EXCEEDED_ERR", "댓글은 대댓글까지만 허용합니다."),
 
     VALIDATION_ERR(400, "VALIDATION_ERR", "잘못된 입력입니다. 올바른 값을 입력해주세요."),
     PERMISSION_ERR(403, "PERMISSION_ERR", "접근 권한이 없습니다. 관리자에게 문의하세요."),
