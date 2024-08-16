@@ -1,5 +1,7 @@
 package chzzk.grassdiary.domain.diary.service;
 
+import chzzk.grassdiary.domain.comment.entity.Comment;
+import chzzk.grassdiary.domain.comment.entity.CommentDAO;
 import chzzk.grassdiary.domain.image.dto.ImageDTO;
 import chzzk.grassdiary.domain.image.entity.DiaryToImageDAO;
 import chzzk.grassdiary.domain.image.service.DiaryImageService;
@@ -49,6 +51,7 @@ public class DiaryService {
     private final MemberDAO memberDAO;
     private final DiaryTagDAO diaryTagDAO;
     private final RewardHistoryDAO rewardHistoryDAO;
+    private final CommentDAO commentDAO;
 
     private final DiaryImageService diaryImageService;
     private final DiaryToImageDAO diaryToImageDAO;
@@ -82,6 +85,7 @@ public class DiaryService {
     @Transactional
     public void delete(Long diaryId) {
         Diary diary = getDiaryById(diaryId);
+        removeDiaryComments(diary);
         removeExistingTags(diary);
         removeDiaryLikes(diaryId);
         diaryImageService.deleteImageAndMapping(diary);
@@ -240,6 +244,21 @@ public class DiaryService {
                 .ifPresent(diaryLike -> {
                     throw new SystemException(ClientErrorCode.DIARY_LIKE_ALREADY_EXISTS);
                 });
+    }
+
+    private void removeDiaryComments(Diary diary) {
+        List<Comment> comments = diary.getComments();
+        for (Comment comment : comments) {
+            removeChildComments(comment);
+        }
+    }
+
+    private void removeChildComments(Comment parentComment) {
+        List<Comment> childComments = parentComment.getChildComments();
+        for (Comment childComment : childComments) {
+            removeChildComments(childComment);  // 재귀적으로 자식 댓글 삭제
+        }
+        commentDAO.delete(parentComment);
     }
 
     private void removeExistingTags(Diary diary) {
