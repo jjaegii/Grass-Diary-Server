@@ -83,8 +83,11 @@ public class DiaryService {
      * 이미지 삭제
      */
     @Transactional
-    public void delete(Long diaryId) {
+    public void delete(Long diaryId, Long logInMemberId) {
         Diary diary = getDiaryById(diaryId);
+
+        validateDiaryOwner(diary, logInMemberId);
+
         removeDiaryComments(diary);
         removeExistingTags(diary);
         removeDiaryLikes(diaryId);
@@ -244,6 +247,12 @@ public class DiaryService {
                 .ifPresent(diaryLike -> {
                     throw new SystemException(ClientErrorCode.DIARY_LIKE_ALREADY_EXISTS);
                 });
+    }
+
+    private void validateDiaryOwner(Diary diary, Long logInMemberId) {
+        if (!diary.getMember().getId().equals(logInMemberId)) {
+            throw new SystemException(ClientErrorCode.AUTHOR_MISMATCH_ERR);
+        }
     }
 
     private void removeDiaryComments(Diary diary) {
