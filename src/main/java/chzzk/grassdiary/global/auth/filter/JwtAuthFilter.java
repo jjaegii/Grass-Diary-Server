@@ -33,7 +33,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     );
 
     private final List<String> publicPaths = List.of(
-            "/api/shared/diaries"
+            "/api/shared/diaries",
+            "/api/member/profile"
     );
 
     private void setCorsHeaders(HttpServletRequest request, HttpServletResponse response) {
