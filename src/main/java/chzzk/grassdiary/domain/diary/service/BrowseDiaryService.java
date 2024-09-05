@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,9 @@ public class BrowseDiaryService {
     private static final int NUMBER_ZERO = 0;
     private static final int PAGE_SIZE_TEN = 10;
     private final DiaryDAO diaryDAO;
+    private final DiaryService diaryService;
 
+    @Transactional(readOnly = true)
     public List<DiaryPreviewDTO> findTop10DiariesThisWeek() {
         LocalDateTime startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
         LocalDateTime endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY).atTime(LocalTime.MAX);
@@ -35,9 +38,10 @@ public class BrowseDiaryService {
         PageRequest pageRequest = PageRequest.of(NUMBER_ZERO, PAGE_SIZE_TEN);
         Page<Diary> diariesPage = diaryDAO.findTop10DiariesThisWeek(startOfWeek, endOfWeek, pageRequest);
 
-        return DiaryPreviewDTO.of(diariesPage);
+        return DiaryPreviewDTO.of(diariesPage, diaryService::getImagesByDiary);
     }
 
+    @Transactional(readOnly = true)
     public AllLatestDiariesDto findLatestDiariesAfterCursor(Long cursorId, int size) {
         PageRequest pageRequest = PageRequest.of(
                 NUMBER_ZERO,
@@ -48,8 +52,16 @@ public class BrowseDiaryService {
 
         boolean hasMore = diaries.size() == size + 1;
         int endIndex = Math.min(diaries.size(), size);
-        List<Diary> originDiaries = new ArrayList<>(diaries.subList(0, endIndex));
+        List<Diary> resultDiaries = new ArrayList<>(diaries.subList(0, endIndex));
 
-        return AllLatestDiariesDto.of(originDiaries, hasMore);
+        List<DiaryPreviewDTO> diaryPreviewDTOs = resultDiaries.stream()
+                .map(this::convertToDiaryPreviewDTO)
+                .toList();
+
+        return AllLatestDiariesDto.of(diaryPreviewDTOs, hasMore);
+    }
+
+    private DiaryPreviewDTO convertToDiaryPreviewDTO(Diary diary) {
+        return DiaryPreviewDTO.toPreviewDiary(diary, diaryService.getImagesByDiary(diary.getId()));
     }
 }
