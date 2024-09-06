@@ -1,7 +1,6 @@
 package chzzk.grassdiary.domain.diary.dto.browse;
 
 import chzzk.grassdiary.domain.diary.entity.Diary;
-import chzzk.grassdiary.domain.diary.service.DiaryService;
 import chzzk.grassdiary.domain.image.dto.ImageDTO;
 
 import java.time.format.DateTimeFormatter;
