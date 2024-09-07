@@ -29,9 +29,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final MemberDAO memberDAO;
 
     private final List<String> publicPaths = Arrays.asList(
+        "/swagger-ui",
+        "/v3/api-docs",
+        "/api/diary/today-question",
+        "/api/main/today-date",
         "/api/auth",
         "/api/shared/diaries",
-        "/api/member/profile"
+        "/api/member/profile",
+        "/api/image",
+        "/actuator"
     );
 
     @Override
