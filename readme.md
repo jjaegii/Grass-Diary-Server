@@ -97,6 +97,7 @@ _<h3> <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fl
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Rocket.png" alt="Rocket" width="35" height="35" /> Architecture
 
+현재 쿠버네티스 환경(홈서버)에서 구동되고 있어 아래의 사진과는 조금 다릅니다. 추후 수정 예정입니다.
 
 <img src="./images/architecture.png">
 
