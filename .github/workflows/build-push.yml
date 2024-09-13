@@ -34,9 +34,9 @@ jobs:
       - name: Update Kubernetes Manifests # refs/heads/deploy -> refs/heads/release 추후 변경
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            sed -i 's/your-image-tag/${{ github.sha }}/g' k8s/dev/deployment.yaml
+            sed -i 's/\${IMAGE_TAG}/'"${{ github.sha }}"'/g' k8s/dev/deployment.yaml
           elif [[ "${{ github.ref }}" == "refs/heads/deploy" ]]; then
-            sed -i 's/your-image-tag/${{ github.sha }}/g' k8s/release/deployment.yaml
+            sed -i 's/\${IMAGE_TAG}/'"${{ github.sha }}"'/g' k8s/release/deployment.yaml
           fi
 
       - name: Commit and Push Updated Manifests
