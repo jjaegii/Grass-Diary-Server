@@ -41,10 +41,10 @@ jobs:
 
       - name: Commit and Push Updated Manifests
         env:
-          GH_PAT: ${{ secrets.DEPLOY_BOT_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config --global user.email "hn06038@gmail.com"
           git config --global user.name "jjaegii"
           git add .
           git commit -m "Update deployment with image tag ${{ github.sha }} for ${{ github.ref }}"
-          git push https://$DEPLOY_BOT_TOKEN@github.com/CHZZK-Study/Grass-Diary-Server.git ${{ github.ref }}
+          git push https://$GH_PAT@github.com/CHZZK-Study/Grass-Diary-Server.git ${{ github.ref }}
