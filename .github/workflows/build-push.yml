@@ -2,7 +2,7 @@ name: Build and Deploy to Docker Hub
 
 on:
   push:
-    branches: [ "release", "dev", "deploy" ]
+    branches: [ "release", "dev" ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/release" ]]; then
             echo "DOCKER_REPO=yeseulhong/grass-diary-release" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/deploy" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             echo "DOCKER_REPO=yeseulhong/grass-diary-dev" >> $GITHUB_ENV
           fi
 
