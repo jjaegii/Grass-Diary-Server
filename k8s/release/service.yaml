@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: spring-boot-app-svc
-  namespace: grass-diary-release
+  namespace: grass-diary-backend-release
 spec:
   selector:
     app: spring-boot-app

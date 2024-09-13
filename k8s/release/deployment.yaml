@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-boot-app
-  namespace: grass-diary-release
+  namespace: grass-diary-backend-release
 spec:
   replicas: 1
   selector:
