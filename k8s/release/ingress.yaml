@@ -1,19 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: spring-boot-app-ingress
+  name: release-ingress
   namespace: grass-diary-backend-release
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  ingressClassName: nginx
   tls:
   - hosts:
-    - chzzk-diary-server.shop
-    secretName: chzzk-diary-server-tls
+    - release.chzzk-diary-server.shop
+    secretName: release-tls-secret
   rules:
-  - host: chzzk-diary-server.shop
+  - host: release.chzzk-diary-server.shop
     http:
       paths:
       - path: /
