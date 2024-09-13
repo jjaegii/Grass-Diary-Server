@@ -5,7 +5,6 @@ metadata:
   namespace: grass-diary-backend-release
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   tls:
   - hosts:
@@ -20,5 +19,5 @@ spec:
         backend:
           service:
             name: spring-boot-app-svc
-            port:
+            port: 
               number: 80
