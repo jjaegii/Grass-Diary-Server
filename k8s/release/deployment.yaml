@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-app
-          image: yeseulhong/grass-diary:${IMAGE_TAG}
+          image: yeseulhong/grass-diary:d31e132d1c70b700add7e07b114d334b02268d7c
           ports:
             - containerPort: 8080
           env:
