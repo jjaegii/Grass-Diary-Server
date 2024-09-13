@@ -4,7 +4,7 @@ metadata:
   name: spring-boot-app
   namespace: grass-diary-backend-release
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: spring-boot-app
