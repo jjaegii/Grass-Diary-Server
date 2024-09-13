@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: release-ingress
-  namespace: grass-diary-backend-release
+  name: dev-ingress
+  namespace: grass-diary-backend-dev
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   tls:
   - hosts:
-    - release.chzzk-diary-server.shop
-    secretName: release-tls-secret
+    - dev.chzzk-diary-server.shop
+    secretName: dev-tls-secret
   rules:
-  - host: release.chzzk-diary-server.shop
+  - host: dev.chzzk-diary-server.shop
     http:
       paths:
       - path: /
