@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-boot-app
+  namespace: grass-diary-backend-release
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: spring-boot-app
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-app
-          image: yeseulhong/grass-diary:${IMAGE_TAG}
+          image: yeseulhong/grass-diary-release:latest
           ports:
             - containerPort: 8080
           env:
