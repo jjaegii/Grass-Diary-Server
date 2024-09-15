@@ -13,6 +13,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -55,8 +56,8 @@ public class Member extends BaseTimeEntity {
 
     private String profileIntro;
 
-    @OneToMany
-    private List<Diary> diaries = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY)
+    private final List<Diary> diaries = new ArrayList<>();
 
     public Member(String nickname, String email, ColorCode currentColorCode) {
         this.nickname = nickname;

@@ -1,9 +1,12 @@
 package chzzk.grassdiary.domain.diary.dto.browse;
 
 import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.domain.image.dto.ImageDTO;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.springframework.data.domain.Page;
 
@@ -15,24 +18,17 @@ public record DiaryPreviewDTO(
         float transparency,
         Long memberId,
         String nickname,
-        String createdAt) {
+        String createdAt,
+        List<ImageDTO> image
+    ) {
 
-    public static List<DiaryPreviewDTO> of(Page<Diary> diaries) {
+    public static List<DiaryPreviewDTO> of(Page<Diary> diaries, Function<Long, List<ImageDTO>> imageLoader) {
         return diaries.stream()
-                .map(d -> new DiaryPreviewDTO(
-                        d.getId(),
-                        trimContent(d.getContent()),
-                        d.getDiaryLikes().size(),
-                        d.getComments().size(),
-                        d.getConditionLevel().getTransparency(),
-                        d.getMember().getId(),
-                        d.getMember().getNickname(),
-                        d.getCreatedAt()
-                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                )).toList();
+                .map(d -> toPreviewDiary(d, imageLoader.apply(d.getId())))
+                .toList();
     }
 
-    private static DiaryPreviewDTO toPreviewDiary(Diary diary) {
+    public static DiaryPreviewDTO toPreviewDiary(Diary diary, List<ImageDTO> images) {
         return new DiaryPreviewDTO(
                 diary.getId(),
                 trimContent(diary.getContent()),
@@ -42,14 +38,9 @@ public record DiaryPreviewDTO(
                 diary.getMember().getId(),
                 diary.getMember().getNickname(),
                 diary.getCreatedAt()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                images
         );
-    }
-
-    public static List<DiaryPreviewDTO> toLatestDiariesDto(List<Diary> diaries) {
-        return diaries.stream()
-                .map(DiaryPreviewDTO::toPreviewDiary)
-                .toList();
     }
 
     private static String trimContent(String content) {

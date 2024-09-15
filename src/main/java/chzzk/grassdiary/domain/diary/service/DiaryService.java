@@ -30,7 +30,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DiaryService {
     private final DiaryDAO diaryDAO;
@@ -56,7 +56,6 @@ public class DiaryService {
     private final DiaryImageService diaryImageService;
     private final DiaryToImageDAO diaryToImageDAO;
 
-    @Transactional
     public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto) {
         Member member = getMemberById(id);
         // 게시글 저장, 이미지가 있다면 매핑값 저장
@@ -69,7 +68,6 @@ public class DiaryService {
         return new DiarySaveResponseDTO(diary.getId());
     }
 
-    @Transactional
     public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto) {
         Diary originalDiary = getDiaryById(id);
         validateUpdateDate(originalDiary);
@@ -82,7 +80,6 @@ public class DiaryService {
      * diaryId를 이용해서 diaryTag, MemberTag 를 찾아내기 diaryTag 삭제 -> deleteAllInBatch 고려해보기 MemberTag 삭제 해당 일기의 좋아요 찾기 및 삭제
      * 이미지 삭제
      */
-    @Transactional
     public void delete(Long diaryId, Long logInMemberId) {
         Diary diary = getDiaryById(diaryId);
 
@@ -105,7 +102,7 @@ public class DiaryService {
         return DiaryDetailDTO.from(diary, tags, isLikedByLoginMember, getImagesByDiary(diaryId));
     }
 
-    private List<ImageDTO> getImagesByDiary(Long diaryId) {
+    public List<ImageDTO> getImagesByDiary(Long diaryId) {
         return diaryToImageDAO.findByDiaryId(diaryId)
                 .stream()
                 .map(ImageDTO::from)
@@ -148,7 +145,6 @@ public class DiaryService {
         );
     }
 
-    @Transactional
     public Long addLike(Long diaryId, Long memberId) {
         Diary diary = getDiaryById(diaryId);
         Member member = getMemberById(memberId);
@@ -165,7 +161,6 @@ public class DiaryService {
         return diaryId;
     }
 
-    @Transactional
     public Long deleteLike(Long diaryId, Long memberId) {
         getDiaryById(diaryId);
 

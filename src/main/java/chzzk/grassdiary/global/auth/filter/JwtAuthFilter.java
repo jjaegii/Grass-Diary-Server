@@ -13,6 +13,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,29 +28,41 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberDAO memberDAO;
 
+    private final List<String> publicPaths = Arrays.asList(
+        "/swagger-ui",
+        "/v3/api-docs",
+        "/api/diary/today-question",
+        "/api/main/today-date",
+        "/api/auth",
+        "/api/shared/diaries",
+        "/api/member/profile",
+        "/api/image",
+        "/actuator"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        response.setHeader("Access-Control-Allow-Methods", "*");
-        response.setHeader("Access-Control-Allow-Headers",
-                "authorization, content-type, accept, origin, x-requested-with");
-        response.setHeader("Access-Control-Allow-Origin", "https://grassdiary.site");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Max-Age", "3600");
+        String path = request.getRequestURI();
+        
+        if (isPublicPath(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
-            if (!request.getMethod().equals("OPTIONS")) {
-                String accessToken = jwtTokenExtractor.extractAccessToken(request);
-                Long id = jwtTokenProvider.extractIdFromAccessToken(accessToken);
-                validateMemberExist(id);
-                filterChain.doFilter(request, response);
-            }
+            String accessToken = jwtTokenExtractor.extractAccessToken(request);
+            Long id = jwtTokenProvider.extractIdFromAccessToken(accessToken);
+            validateMemberExist(id);
+            filterChain.doFilter(request, response);
         } catch (SystemException e) {
             log.error(e.getMessage());
             jwtExceptionHandler(response, e);
         }
+    }
 
+    private boolean isPublicPath(String path) {
+        return publicPaths.stream().anyMatch(path::startsWith);
     }
 
     public void jwtExceptionHandler(HttpServletResponse response, SystemException exception) throws IOException {
