@@ -58,6 +58,9 @@ public class DiaryService {
 
     public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto) {
         Member member = getMemberById(id);
+
+        validateDiaryExistenceForToday(member.getId());
+
         // 게시글 저장, 이미지가 있다면 매핑값 저장
         Diary diary = saveDiary(requestDto, member);
         saveTags(requestDto.getHashtags(), member, diary);
@@ -65,10 +68,12 @@ public class DiaryService {
         int rewardPoint = makeRewardPoint();
         saveRewardPointAndHistory(member, rewardPoint);
 
-        return new DiarySaveResponseDTO(diary.getId());
+        return new DiarySaveResponseDTO(diary.getId(), rewardPoint);
     }
 
-    public DiarySaveResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto) {
+
+    @Transactional
+    public DiaryUpdateResponseDTO update(Long id, DiaryUpdateRequestDTO requestDto) {
         Diary originalDiary = getDiaryById(id);
         validateUpdateDate(originalDiary);
         updateTags(originalDiary, requestDto.getHashtags());
@@ -229,6 +234,14 @@ public class DiaryService {
         }
     }
 
+    private void validateDiaryExistenceForToday(Long memberId) {
+        LocalDate today = LocalDate.now();
+        boolean exists = diaryDAO.existsByMemberIdAndDate(memberId, today);
+        if (exists) {
+            throw new SystemException(ClientErrorCode.DIARY_ALREADY_EXISTS_FOR_TODAY);
+        }
+    }
+
     private void validateUpdateDate(Diary diary) {
         LocalDate createdAt = diary.getCreatedAt().toLocalDate();
         LocalDate today = LocalDateTime.now().toLocalDate();
@@ -301,7 +314,7 @@ public class DiaryService {
         diaryLikeDAO.deleteAll(diaryLikes);
     }
 
-    private DiarySaveResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary) {
+    private DiaryUpdateResponseDTO updateDiary(DiaryUpdateRequestDTO requestDto, Diary diary) {
         // 1. 기존 이미지가 있고, 이미지 id 값이 동일하다면 유지
         Long newImageId = requestDto.getImageId();
         Long existImageId = diaryImageService.getImageIdByDiaryId(diary.getId());
@@ -323,7 +336,7 @@ public class DiaryService {
         diary.update(requestDto.getContent(), requestDto.getIsPrivate(),
                 requestDto.getHasTag(), requestDto.getConditionLevel());
 
-        return new DiarySaveResponseDTO(diary.getId());
+        return new DiaryUpdateResponseDTO(diary.getId());
     }
 
     // 다이어리에 해당하는 태그 리스트
