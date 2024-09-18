@@ -7,6 +7,7 @@ import chzzk.grassdiary.domain.image.entity.Image;
 import chzzk.grassdiary.domain.image.entity.ImageDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import chzzk.grassdiary.global.config.AwsProperties;
 import chzzk.grassdiary.global.util.file.FileFolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class ImageService {
     private final ImageDAO imageDAO;
     private final AwsS3Service awsS3Service;
     private final DiaryToImageDAO diaryToImageDAO;
+    private final AwsProperties awsProperties;
 
     public ImageDTO uploadImage(MultipartFile image, FileFolder category) {
         if(image.isEmpty()) {
@@ -54,7 +56,7 @@ public class ImageService {
     }
 
     public String getImageURLByImage(Image image) {
-        return baseURL + image.getImagePath();
+        return awsProperties.getS3Url() + image.getImagePath();
     }
 
 }
