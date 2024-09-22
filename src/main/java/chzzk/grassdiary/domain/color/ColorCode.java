@@ -24,9 +24,12 @@ public class ColorCode {
 
     private String rgb;
 
+    private int price;
+
     @Builder
-    public ColorCode(String colorName, String rgb) {
+    public ColorCode(String colorName, String rgb, int price) {
         this.colorName = colorName;
         this.rgb = rgb;
+        this.price = price;
     }
 }
