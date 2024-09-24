@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - release.chzzk-diary-server.shop
+    - api.release.grassdiary.site
     secretName: release-tls-secret
   rules:
-  - host: release.chzzk-diary-server.shop
+  - host: api.release.grassdiary.site
     http:
       paths:
       - path: /
