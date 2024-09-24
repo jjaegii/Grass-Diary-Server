@@ -24,6 +24,7 @@ public class AwsProperties {
     @Setter
     public static class S3 {
         private String bucket;
+        private String url;
     }
 
     @Getter
@@ -46,5 +47,9 @@ public class AwsProperties {
 
     public String getRegionStatic() {
         return region.getStatics();
+    }
+
+    public String getS3Url() {
+        return s3.getUrl();
     }
 }
