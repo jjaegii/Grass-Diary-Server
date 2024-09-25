@@ -112,7 +112,7 @@ public class DiaryService {
     public List<ImageDTO> getImagesByDiary(Long diaryId) {
         return diaryToImageDAO.findByDiaryId(diaryId)
                 .stream()
-                .map(image -> ImageDTO.from(image, imageService.getImageURLByImage(image.getImage())))
+                .map(image -> ImageDTO.from(image, imageService.getImageURLByImage(image.getImage()), image.getImage().getImageName()))
                 .toList();
     }
 
