@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,4 +31,10 @@ public class MemberPurchasedColor extends BaseCreatedTimeEntity {
     @ManyToOne
     @JoinColumn(name = "colorCode_id")
     private ColorCode colorCode;
+
+    @Builder
+    public MemberPurchasedColor(Member member, ColorCode colorCode) {
+        this.member = member;
+        this.colorCode = colorCode;
+    }
 }
