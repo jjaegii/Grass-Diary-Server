@@ -31,9 +31,10 @@ public class ImageService {
             throw new SystemException(ClientErrorCode.IMAGE_FILE_EMPTY);
         }
         String imagePath = awsS3Service.uploadBucket(image, category);
-        Image uploadedImage = imageDAO.save(new Image(imagePath, image.getOriginalFilename()));
+        long sizeInKB = image.getSize() / 1024; 
+        Image uploadedImage = imageDAO.save(new Image(imagePath, image.getOriginalFilename(), sizeInKB));
 
-        return new ImageDTO(uploadedImage.getId(), baseURL + imagePath, image.getOriginalFilename());
+        return new ImageDTO(uploadedImage.getId(), baseURL + imagePath, image.getOriginalFilename(), sizeInKB);
     }
 
     /**
