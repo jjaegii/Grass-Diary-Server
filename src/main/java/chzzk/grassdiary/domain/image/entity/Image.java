@@ -24,9 +24,9 @@ public class Image extends BaseCreatedTimeEntity {
 
     private String imageName;
 
-    private Long size;
+    private Double size;
 
-    public Image(String imagePath, String imageName, Long size) {
+    public Image(String imagePath, String imageName, Double size) {
         this.imagePath = imagePath;
         this.imageName = imageName;
         this.size = size;
