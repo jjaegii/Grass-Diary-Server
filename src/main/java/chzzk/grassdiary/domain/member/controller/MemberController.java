@@ -1,11 +1,14 @@
 package chzzk.grassdiary.domain.member.controller;
 
+import chzzk.grassdiary.domain.member.dto.EquipColorResponseDTO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorsResponseDTO;
 import chzzk.grassdiary.domain.member.service.MemberService;
 import chzzk.grassdiary.domain.member.service.MyPageService;
 import chzzk.grassdiary.domain.member.dto.MemberInfoDTO;
 import chzzk.grassdiary.domain.member.dto.TotalRewardDTO;
 import chzzk.grassdiary.domain.reward.service.RewardService;
+import chzzk.grassdiary.global.auth.common.AuthenticatedMember;
+import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,5 +55,12 @@ public class MemberController {
     @GetMapping("/{memberId}/colors")
     public MemberPurchasedColorsResponseDTO getMemberColors(@PathVariable Long memberId) {
         return memberService.getPurchasedColors(memberId);
+    }
+
+    @PostMapping("/colors/{colorCodeId}/equip")
+    public EquipColorResponseDTO equipColor(
+            @PathVariable(name = "colorCodeId") Long colorCodeId,
+            @AuthenticatedMember AuthMemberPayload payload) {
+        return memberService.equipColor(payload.id(), colorCodeId);
     }
 }

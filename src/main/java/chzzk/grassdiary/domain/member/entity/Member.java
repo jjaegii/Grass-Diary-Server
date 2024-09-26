@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.member.entity;
 
 import chzzk.grassdiary.domain.base.BaseTimeEntity;
-import chzzk.grassdiary.domain.color.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import chzzk.grassdiary.domain.diary.entity.Diary;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
@@ -101,5 +101,12 @@ public class Member extends BaseTimeEntity {
             throw new SystemException(ClientErrorCode.INSUFFICIENT_REWARD_POINTS_ERR);
         }
         this.rewardPoint -= points;
+    }
+
+    public void equipColor(ColorCode newColor) {
+        if (this.currentColorCode.getId().equals(newColor.getId())) {
+            throw new SystemException(ClientErrorCode.COLOR_ALREADY_EQUIPPED_ERR);
+        }
+        this.currentColorCode = newColor;
     }
 }

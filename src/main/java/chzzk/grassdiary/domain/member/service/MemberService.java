@@ -1,5 +1,6 @@
 package chzzk.grassdiary.domain.member.service;
 
+import chzzk.grassdiary.domain.member.dto.EquipColorResponseDTO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorResponseDTO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorsResponseDTO;
 import chzzk.grassdiary.domain.member.entity.MemberPurchasedColorDAO;
@@ -78,4 +79,44 @@ public class MemberService {
 
         return MemberPurchasedColorResponseDTO.from(defaultColorCode);
     }
+
+    public EquipColorResponseDTO equipColor(Long logInMemberId, Long colorCodeId) {
+        Member member = getMemberById(logInMemberId);
+
+        validateMemberOwnsColor(colorCodeId, logInMemberId);
+
+        validateColorAlreadyEquipped(member, colorCodeId);
+
+        changeMemberColor(member, colorCodeId);
+
+        return EquipColorResponseDTO.from(member);
+    }
+
+    private Member getMemberById(Long id) {
+        return memberDAO.findById(id)
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
+    }
+
+    private void validateMemberOwnsColor(Long memberId, Long colorCodeId) {
+        boolean ownsColor = memberPurchasedColorDAO.existsByColorCodeIdAndMemberId(memberId, colorCodeId);
+        if (!ownsColor) {
+            throw new SystemException(ClientErrorCode.MEMBER_DOES_NOT_OWN_COLOR_ERR);
+        }
+    }
+
+    private void validateColorAlreadyEquipped(Member member, Long colorId) {
+        if (member.getCurrentColorCode().getId().equals(colorId)) {
+            throw new SystemException(ClientErrorCode.COLOR_ALREADY_EQUIPPED_ERR);
+        }
+    }
+
+    private void changeMemberColor(Member member, Long colorCodeId) {
+        ColorCode newColor = colorCodeDAO.findById(colorCodeId)
+                .orElseThrow(() -> new SystemException(ClientErrorCode.COLOR_CODE_NOT_FOUND_ERR));
+
+        member.equipColor(newColor);
+
+        memberDAO.save(member);
+    }
+
 }
