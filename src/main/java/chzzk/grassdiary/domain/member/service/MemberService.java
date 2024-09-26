@@ -1,10 +1,17 @@
 package chzzk.grassdiary.domain.member.service;
 
+import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorResponseDTO;
+import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorsResponseDTO;
+import chzzk.grassdiary.domain.member.entity.MemberPurchasedColorDAO;
 import chzzk.grassdiary.global.auth.service.dto.GoogleUserInfo;
-import chzzk.grassdiary.domain.color.ColorCode;
-import chzzk.grassdiary.domain.color.ColorCodeDAO;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCodeDAO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +27,7 @@ public class MemberService {
 
     private final MemberDAO memberDAO;
     private final ColorCodeDAO colorCodeDAO;
+    private final MemberPurchasedColorDAO memberPurchasedColorDAO;
 
     public Member createMemberIfNotExist(GoogleUserInfo googleUserInfo) {
         Optional<Member> foundMember = memberDAO.findByEmail(googleUserInfo.email());
@@ -46,5 +54,28 @@ public class MemberService {
                                 .price(DEFAULT_PRICE)
                                 .build()
                 ));
+    }
+
+    public MemberPurchasedColorsResponseDTO getPurchasedColors(Long memberId) {
+        if (!memberDAO.existsById(memberId)) {
+            throw new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR);
+        }
+
+        List<MemberPurchasedColorResponseDTO> colors = new ArrayList<>(
+                memberPurchasedColorDAO.findAllByMemberId(memberId).stream()
+                        .map(MemberPurchasedColorResponseDTO::from)
+                        .toList()
+        );
+
+        colors.add(getDefaultColorDTO());
+
+        return MemberPurchasedColorsResponseDTO.from(colors);
+    }
+
+    private MemberPurchasedColorResponseDTO getDefaultColorDTO() {
+        ColorCode defaultColorCode = colorCodeDAO.findByColorName(DEFAULT_COLOR_NAME)
+                .orElseThrow(() -> new SystemException(ClientErrorCode.COLOR_CODE_NOT_FOUND_ERR));
+
+        return MemberPurchasedColorResponseDTO.from(defaultColorCode);
     }
 }

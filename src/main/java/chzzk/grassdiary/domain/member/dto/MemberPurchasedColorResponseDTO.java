@@ -1,21 +1,31 @@
 package chzzk.grassdiary.domain.member.dto;
 
+
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import chzzk.grassdiary.domain.member.entity.MemberPurchasedColor;
 
 public record MemberPurchasedColorResponseDTO(
         Long id,
-        Long memberId,
-        Long colorCodeId,
         String colorName,
-        String rgb
+        String rgb,
+        int price
 ) {
-    public MemberPurchasedColorResponseDTO(MemberPurchasedColor memberPurchasedColor) {
-        this(
-                memberPurchasedColor.getId(),
-                memberPurchasedColor.getMember().getId(),
-                memberPurchasedColor.getColorCode().getId(),
-                memberPurchasedColor.getColorCode().getColorName(),
-                memberPurchasedColor.getColorCode().getRgb()
+    public static MemberPurchasedColorResponseDTO from(MemberPurchasedColor memberPurchasedColor) {
+        ColorCode colorCode = memberPurchasedColor.getColorCode();
+        return new MemberPurchasedColorResponseDTO(
+                colorCode.getId(),
+                colorCode.getColorName(),
+                colorCode.getRgb(),
+                colorCode.getPrice()
+        );
+    }
+
+    public static MemberPurchasedColorResponseDTO from(ColorCode colorCode) {
+        return new MemberPurchasedColorResponseDTO(
+                colorCode.getId(),
+                colorCode.getColorName(),
+                colorCode.getRgb(),
+                colorCode.getPrice()
         );
     }
 }
