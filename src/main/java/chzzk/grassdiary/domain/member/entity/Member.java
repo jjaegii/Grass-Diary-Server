@@ -3,6 +3,8 @@ package chzzk.grassdiary.domain.member.entity;
 import chzzk.grassdiary.domain.base.BaseTimeEntity;
 import chzzk.grassdiary.domain.color.ColorCode;
 import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -92,5 +94,12 @@ public class Member extends BaseTimeEntity {
 
     public void addRandomPoint(Integer randomPoint) {
         this.rewardPoint += randomPoint;
+    }
+
+    public void deductRewardPoints(int points) {
+        if (this.rewardPoint < points) {
+            throw new SystemException(ClientErrorCode.INSUFFICIENT_REWARD_POINTS_ERR);
+        }
+        this.rewardPoint -= points;
     }
 }

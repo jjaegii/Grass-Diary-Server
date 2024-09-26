@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private static final String DEFAULT_COLOR_NAME = "GREEN";
     private static final String DEFAULT_RGB = "0,255,0";
+    private static final int DEFAULT_PRICE = 0;
+
     private final MemberDAO memberDAO;
     private final ColorCodeDAO colorCodeDAO;
 
@@ -41,6 +43,7 @@ public class MemberService {
                         ColorCode.builder()
                                 .colorName(DEFAULT_COLOR_NAME)
                                 .rgb(DEFAULT_RGB)
+                                .price(DEFAULT_PRICE)
                                 .build()
                 ));
     }

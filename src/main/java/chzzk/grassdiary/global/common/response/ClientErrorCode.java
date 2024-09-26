@@ -18,6 +18,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     DIARY_LIKE_ALREADY_EXISTS(409, "DIARY_LIKE_ALREADY_EXISTS", "다이어리에 좋아요를 이미 눌렀습니다."),
     DIARY_ALREADY_EXISTS_FOR_TODAY(409, "DIARY_ALREADY_EXISTS_FOR_TODAY", "일기는 하루에 하나만 작성 가능합니다."),
     COMMENT_NOT_FOUND_ERR(404, "COMMENT_NOT_FOUND_ERR", "요청하신 댓글을 찾을 수 없습니다."),
+    INSUFFICIENT_REWARD_POINTS_ERR(409, "INSUFFICIENT_REWARD_POINTS_ERR", "포인트가 충분하지 않습니다."),
     INVALID_IMAGE_FORMAT(400, "INVALID_IMAGE_FORMAT", "허용되지 않는 파일 형식입니다."),
     IMAGE_FILE_EMPTY(400, "IMAGE_FILE_EMPTY", "이미지 파일이 비어 있습니다."),
     IMAGE_NOT_FOUND_ERR(400, "IMAGE_NOT_FOUND_ERR", "해당 이미지를 찾을 수 없습니다.(이미지가 저장되어 있지 않음)"),
@@ -25,6 +26,8 @@ public enum ClientErrorCode implements ErrorCodeModel {
     AUTHOR_MISMATCH_ERR(403, "AUTHOR_MISMATCH_ERR", "작성자가 아닙니다."),
     COMMENT_ALREADY_DELETED_ERR(400, "COMMENT_ALREADY_DELETED_ERR", "이미 삭제된 댓글입니다."),
     COMMENT_DEPTH_EXCEEDED_ERR(400, "COMMENT_DEPTH_EXCEEDED_ERR", "댓글은 대댓글까지만 허용합니다."),
+    COLOR_CODE_NOT_FOUND_ERR(404, "COLOR_CODE_NOT_FOUND_ERR", "존재하지 않는 색상입니다."),
+    COLOR_ALREADY_PURCHASED_ERR(409, "COLOR_ALREADY_PURCHASED_ERR", "이미 구매한 색상입니다."),
 
     VALIDATION_ERR(400, "VALIDATION_ERR", "잘못된 입력입니다. 올바른 값을 입력해주세요."),
     PERMISSION_ERR(403, "PERMISSION_ERR", "접근 권한이 없습니다. 관리자에게 문의하세요."),
