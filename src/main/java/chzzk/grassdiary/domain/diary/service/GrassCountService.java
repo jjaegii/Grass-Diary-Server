@@ -6,7 +6,7 @@ import chzzk.grassdiary.domain.diary.entity.DiaryDAO;
 import chzzk.grassdiary.domain.member.dto.GrassInfoDTO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
-import chzzk.grassdiary.domain.color.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import lombok.RequiredArgsConstructor;

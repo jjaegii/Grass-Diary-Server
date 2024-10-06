@@ -32,6 +32,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     COLOR_CODE_NOT_FOUND_ERR(404, "COLOR_CODE_NOT_FOUND_ERR", "존재하지 않는 색상입니다."),
     COLOR_ALREADY_PURCHASED_ERR(409, "COLOR_ALREADY_PURCHASED_ERR", "이미 구매한 색상입니다."),
 
+
     VALIDATION_ERR(400, "VALIDATION_ERR", "잘못된 입력입니다. 올바른 값을 입력해주세요."),
     PERMISSION_ERR(403, "PERMISSION_ERR", "접근 권한이 없습니다. 관리자에게 문의하세요."),
     TIMEOUT_ERR(408, "TIMEOUT_ERR", "요청 시간이 초과되었습니다. 다시 시도해주세요."),

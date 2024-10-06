@@ -103,7 +103,7 @@ public class Member extends BaseTimeEntity {
         this.email = "withdrawnMember";
         this.profileIntro = null;
         this.picture = null;
-
+    }
     public void deductRewardPoints(int points) {
         if (this.rewardPoint < points) {
             throw new SystemException(ClientErrorCode.INSUFFICIENT_REWARD_POINTS_ERR);

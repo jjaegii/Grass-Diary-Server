@@ -1,6 +1,6 @@
 package chzzk.grassdiary.domain.member.service;
 
-import chzzk.grassdiary.domain.color.ColorCodeDAO;
+import chzzk.grassdiary.domain.color.entity.ColorCodeDAO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.global.auth.service.dto.GoogleUserInfo;
