@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.member.service;
 
-import chzzk.grassdiary.domain.color.ColorCode;
-import chzzk.grassdiary.domain.color.ColorCodeDAO;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCodeDAO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorResponseDTO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
@@ -34,7 +34,7 @@ public class MemberPurchasedColorService {
         saveRewardHistory(member, colorCode);
         MemberPurchasedColor memberPurchasedColor = registerPurchase(member, colorCode);
 
-        return new MemberPurchasedColorResponseDTO(memberPurchasedColor);
+        return MemberPurchasedColorResponseDTO.from(memberPurchasedColor);
     }
 
     private Member getMemberById(Long id) {
