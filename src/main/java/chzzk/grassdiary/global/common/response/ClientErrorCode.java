@@ -1,15 +1,15 @@
 package chzzk.grassdiary.global.common.response;
 
 public enum ClientErrorCode implements ErrorCodeModel {
-    UNAUTHORIZED(401, "UNAUTHORIZED", "인증이 필요합니다. 로그인 해주세요."),
+    UNAUTHORIZED(401, "UNAUTHORIZED", "인증이 필요합니다."),
     AUTHENTICATION_FAILED(401, "AUTHENTICATION_FAILED", "인증을 실패했습니다."),
     AUTH_INVALID_ACCESS_TOKEN(401, "AUTH_INVALID_ACCESS_TOKEN", "잘못된 액세스 토큰입니다."),
-    AUTH_EXPIRED_ACCESS_TOKEN(401, "AUTH_EXPIRED_ACCESS_TOKEN", "액세스 토큰이 만료되었습니다."),
+    AUTH_EXPIRED_ACCESS_TOKEN(401, "AUTH_EXPIRED_ACCESS_TOKEN", "로그인 만료 시간 30분이 지나\n자동으로 로그아웃 되었어요."),
     AUTH_INVALID_SIGNATURE(401, "AUTH_INVALID_SIGNATURE", "잘못된 시그니처입니다."),
     AUTH_JWT_ERROR(401, "AUTH_JWT_ERROR", "JWT 관련 오류가 발생했습니다."),
     AUTH_MISSING_ID_IN_ACCESS_TOKEN(401, "AUTH_MISSING_ID_IN_ACCESS_TOKEN", "JWT 액세스 토큰에 ID가 누락되었습니다."),
     AUTH_TOKEN_EXTRACTION_FAILED(401, "AUTH_TOKEN_EXTRACTION_FAILED", "액세스 토큰 추출에 실패했습니다."),
-    AUTH_SESSION_EXPIRED(440, "AUTH_SESSION_EXPIRED", "세션이 만료되었습니다. 다시 로그인 해주세요."),
+    AUTH_SESSION_EXPIRED(440, "AUTH_SESSION_EXPIRED", "세션이 만료되었습니다."),
 
     ALREADY_WITHDRAWN_MEMBER_ERR(409, "ALREADY_WITHDRAWN_MEMBER_ERR","이전에 탈퇴한 회원은 재가입할 수 없습니다."),
     MEMBER_NOT_FOUND_ERR(404, "MEMBER_NOT_FOUND_ERR", "요청하신 사용자를 찾을 수 없습니다."),
