@@ -41,7 +41,18 @@ public class RewardService {
                 )).toList();
     }
 
+    public void deleteAllRewardHistory(long memberId) {
+        validateMemberExists(memberId);
+
+        rewardHistoryDAO.deleteAllByMemberId(memberId);
+    }
+
     private String makeHistoryStamp(LocalDateTime createdAt) {
         return createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    private void validateMemberExists(Long memberId) {
+        memberDAO.findById(memberId)
+                .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
     }
 }

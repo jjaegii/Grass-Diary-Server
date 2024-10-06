@@ -29,4 +29,10 @@ public class RewardController {
     public ResponseEntity<?> getRewardHistory(@PathVariable Long memberId) {
         return ResponseEntity.ok(rewardService.getRewardHistory(memberId));
     }
+
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))
+    public ResponseEntity<String> deleteAllRewardsForMember(@PathVariable Long memberId) {
+        rewardService.deleteAllRewardHistory(memberId);
+        return ResponseEntity.ok("All reward history deleted for member " + memberId);
+    }
 }
