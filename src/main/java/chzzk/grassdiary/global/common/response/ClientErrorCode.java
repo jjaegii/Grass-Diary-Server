@@ -11,6 +11,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     AUTH_TOKEN_EXTRACTION_FAILED(401, "AUTH_TOKEN_EXTRACTION_FAILED", "액세스 토큰 추출에 실패했습니다."),
     AUTH_SESSION_EXPIRED(440, "AUTH_SESSION_EXPIRED", "세션이 만료되었습니다. 다시 로그인 해주세요."),
 
+    ALREADY_WITHDRAWN_MEMBER_ERR(409, "ALREADY_WITHDRAWN_MEMBER_ERR","이전에 탈퇴한 회원은 재가입할 수 없습니다."),
     MEMBER_NOT_FOUND_ERR(404, "MEMBER_NOT_FOUND_ERR", "요청하신 사용자를 찾을 수 없습니다."),
     MEMBER_DOES_NOT_OWN_COLOR_ERR(409, "MEMBER_DOES_NOT_OWN_COLOR_ERR", "해당 색상을 소유하고 있지 않습니다."),
     PAST_DIARY_MODIFICATION_NOT_ALLOWED(409, "PAST_DIARY_MODIFICATION_NOT_ALLOWED", "과거의 일기는 수정할 수 없습니다."),

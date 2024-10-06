@@ -1,5 +1,7 @@
 package chzzk.grassdiary.domain.member.service;
 
+import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.domain.diary.entity.DiaryDAO;
 import chzzk.grassdiary.domain.member.dto.EquipColorResponseDTO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorResponseDTO;
 import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorsResponseDTO;

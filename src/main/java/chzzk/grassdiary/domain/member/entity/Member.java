@@ -96,6 +96,14 @@ public class Member extends BaseTimeEntity {
         this.rewardPoint += randomPoint;
     }
 
+
+    public void withdrawMember() {
+        this.rewardPoint = 0;
+        this.nickname = "탈퇴한 회원";
+        this.email = "withdrawnMember";
+        this.profileIntro = null;
+        this.picture = null;
+
     public void deductRewardPoints(int points) {
         if (this.rewardPoint < points) {
             throw new SystemException(ClientErrorCode.INSUFFICIENT_REWARD_POINTS_ERR);
