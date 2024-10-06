@@ -99,7 +99,7 @@ public class Member extends BaseTimeEntity {
 
     public void withdrawMember() {
         this.rewardPoint = 0;
-        this.nickname = "탈퇴한 회원";
+        this.nickname = null;
         this.email = "withdrawnMember";
         this.profileIntro = null;
         this.picture = null;
