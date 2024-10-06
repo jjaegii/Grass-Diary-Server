@@ -1,5 +1,7 @@
 package chzzk.grassdiary.global.auth.service;
 
+import chzzk.grassdiary.domain.member.entity.WithdrawnMemberDAO;
+import chzzk.grassdiary.domain.member.service.WithdrawnMemberService;
 import chzzk.grassdiary.global.auth.client.GoogleOAuthClient;
 import chzzk.grassdiary.global.auth.jwt.JwtTokenProvider;
 import chzzk.grassdiary.global.auth.service.dto.AuthMemberPayload;
@@ -23,6 +25,7 @@ public class OAuthService {
     private final GoogleOAuthClient googleOAuthClient;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
+    private final WithdrawnMemberService withdrawnMemberService;
 
     public String findRedirectUri() {
         return googleOAuthUriGenerator.generateUrl();
@@ -32,6 +35,8 @@ public class OAuthService {
         GoogleOAuthToken googleAccessToken = googleOAuthClient.getGoogleAccessToken(code);
 
         GoogleUserInfo googleUserInfo = googleOAuthClient.getGoogleUserInfo(googleAccessToken.accessToken());
+
+        withdrawnMemberService.checkWithdrawnMember(googleUserInfo.email());
 
         Member member = memberService.createMemberIfNotExist(googleUserInfo);
 
