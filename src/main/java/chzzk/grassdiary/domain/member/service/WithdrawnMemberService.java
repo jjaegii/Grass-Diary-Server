@@ -8,6 +8,7 @@ import chzzk.grassdiary.domain.diary.entity.DiaryDAO;
 import chzzk.grassdiary.domain.diary.service.DiaryService;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
+import chzzk.grassdiary.domain.member.entity.MemberPurchasedColorDAO;
 import chzzk.grassdiary.domain.member.entity.WithdrawnMember;
 import chzzk.grassdiary.domain.member.entity.WithdrawnMemberDAO;
 import chzzk.grassdiary.domain.reward.service.RewardService;
@@ -28,6 +29,7 @@ public class WithdrawnMemberService {
     private final DiaryDAO diaryDAO;
     private final CommentDAO commentDAO;
     private final WithdrawnMemberDAO withdrawnMemberDAO;
+    private final MemberPurchasedColorDAO memberPurchasedColorDAO;
     private final DiaryService diaryService;
     private final CommentService commentService;
     private final RewardService rewardService;
@@ -44,6 +46,7 @@ public class WithdrawnMemberService {
         deleteRewards(logInMemberId);
 
         //구입한 잔디 색깔 이력 삭제
+        deleteMemberPurchasedColor(logInMemberId);
 
         //email 해싱
         String hashedEmail = hashEmail(member.getEmail());
@@ -87,6 +90,10 @@ public class WithdrawnMemberService {
 
     private void deleteRewards(long memberId) {
         rewardService.deleteAllRewardHistory(memberId);
+    }
+
+    private void deleteMemberPurchasedColor(long memberId) {
+        memberPurchasedColorDAO.deleteAllByMemberId(memberId);
     }
 
     // 이메일 해싱 메서드
