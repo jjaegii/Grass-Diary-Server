@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.member.entity;
 
 import chzzk.grassdiary.domain.base.BaseCreatedTimeEntity;
-import chzzk.grassdiary.domain.color.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,4 +31,10 @@ public class MemberPurchasedColor extends BaseCreatedTimeEntity {
     @ManyToOne
     @JoinColumn(name = "colorCode_id")
     private ColorCode colorCode;
+
+    @Builder
+    public MemberPurchasedColor(Member member, ColorCode colorCode) {
+        this.member = member;
+        this.colorCode = colorCode;
+    }
 }

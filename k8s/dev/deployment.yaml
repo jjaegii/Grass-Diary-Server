@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: spring-boot-app
-          image: yeseulhong/grass-diary-release:latest
+          image: yeseulhong/grass-diary-dev:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:

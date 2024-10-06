@@ -1,7 +1,7 @@
 package chzzk.grassdiary.domain.diary.service;
 
-import chzzk.grassdiary.domain.color.ColorCode;
-import chzzk.grassdiary.domain.color.ColorCodeDAO;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCodeDAO;
 import chzzk.grassdiary.domain.color.ConditionLevel;
 import chzzk.grassdiary.domain.diary.dto.browse.DiaryPreviewDTO;
 import chzzk.grassdiary.domain.diary.entity.Diary;

@@ -6,9 +6,11 @@ import chzzk.grassdiary.domain.image.entity.DiaryToImage;
 
 public record ImageDTO (
         Long imageId,
-        String imageURL
+        String imageURL,
+        String imageName,
+        Double imageSize
 ) {
-    public static ImageDTO from(DiaryToImage diaryToImage, String imageURL) {
-        return new ImageDTO(diaryToImage.getImage().getId(), imageURL);
+    public static ImageDTO from(DiaryToImage diaryToImage, String imageURL, String imageName, Double imageSize) {
+        return new ImageDTO(diaryToImage.getImage().getId(), imageURL, imageName, imageSize);
     }
 }

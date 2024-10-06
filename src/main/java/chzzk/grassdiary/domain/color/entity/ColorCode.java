@@ -1,4 +1,4 @@
-package chzzk.grassdiary.domain.color;
+package chzzk.grassdiary.domain.color.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,9 +24,12 @@ public class ColorCode {
 
     private String rgb;
 
+    private int price;
+
     @Builder
-    public ColorCode(String colorName, String rgb) {
+    public ColorCode(String colorName, String rgb, int price) {
         this.colorName = colorName;
         this.rgb = rgb;
+        this.price = price;
     }
 }

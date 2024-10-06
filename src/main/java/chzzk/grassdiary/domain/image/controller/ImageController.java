@@ -31,6 +31,9 @@ public class ImageController {
     String THEME_SHOP_URL = "static/images/theme_shop.jpg";
 
     @PostMapping("/diary")
+    @Operation(
+            summary = "일기 이미지 저장",
+            description = "이미지 저장시 사이즈는 KB(킬로바이트) 단위")
     public ResponseEntity<?> uploadDiaryImage(
             @RequestPart MultipartFile image
     ) {

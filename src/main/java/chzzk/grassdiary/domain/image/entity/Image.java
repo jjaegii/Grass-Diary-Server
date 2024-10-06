@@ -22,7 +22,13 @@ public class Image extends BaseCreatedTimeEntity {
     @Lob
     private String imagePath;
 
-    public Image(String imagePath) {
+    private String imageName;
+
+    private Double size;
+
+    public Image(String imagePath, String imageName, Double size) {
         this.imagePath = imagePath;
+        this.imageName = imageName;
+        this.size = size;
     }
 }
