@@ -1,10 +1,15 @@
 package chzzk.grassdiary.domain.member.service;
 
+import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.domain.diary.entity.DiaryDAO;
 import chzzk.grassdiary.global.auth.service.dto.GoogleUserInfo;
 import chzzk.grassdiary.domain.color.ColorCode;
 import chzzk.grassdiary.domain.color.ColorCodeDAO;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -93,4 +93,12 @@ public class Member extends BaseTimeEntity {
     public void addRandomPoint(Integer randomPoint) {
         this.rewardPoint += randomPoint;
     }
+
+    public void withdrawMember() {
+        this.rewardPoint = 0;
+        this.nickname = "탈퇴한 회원";
+        this.email = "withdrawnMember";
+        this.profileIntro = null;
+        this.picture = null;
+    }
 }
