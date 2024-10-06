@@ -16,6 +16,7 @@ import chzzk.grassdiary.domain.diary.entity.tag.MemberTags;
 import chzzk.grassdiary.domain.diary.entity.tag.MemberTagsDAO;
 import chzzk.grassdiary.domain.diary.entity.tag.TagList;
 import chzzk.grassdiary.domain.diary.entity.tag.TagListDAO;
+import chzzk.grassdiary.domain.image.service.ImageService;
 import chzzk.grassdiary.domain.member.entity.Member;
 import chzzk.grassdiary.domain.member.entity.MemberDAO;
 import chzzk.grassdiary.domain.reward.RewardHistory;
@@ -55,6 +56,7 @@ public class DiaryService {
 
     private final DiaryImageService diaryImageService;
     private final DiaryToImageDAO diaryToImageDAO;
+    private final ImageService imageService;
 
     public DiarySaveResponseDTO save(Long id, DiarySaveRequestDTO requestDto) {
         Member member = getMemberById(id);
@@ -110,7 +112,7 @@ public class DiaryService {
     public List<ImageDTO> getImagesByDiary(Long diaryId) {
         return diaryToImageDAO.findByDiaryId(diaryId)
                 .stream()
-                .map(ImageDTO::from)
+                .map(image -> ImageDTO.from(image, imageService.getImageURLByImage(image.getImage()), image.getImage().getImageName(), image.getImage().getSize()))
                 .toList();
     }
 

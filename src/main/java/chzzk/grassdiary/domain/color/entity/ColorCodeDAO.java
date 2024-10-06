@@ -1,5 +1,6 @@
-package chzzk.grassdiary.domain.color;
+package chzzk.grassdiary.domain.color.entity;
 
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

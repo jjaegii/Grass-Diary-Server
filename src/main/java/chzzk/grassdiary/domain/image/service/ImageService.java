@@ -7,6 +7,7 @@ import chzzk.grassdiary.domain.image.entity.Image;
 import chzzk.grassdiary.domain.image.entity.ImageDAO;
 import chzzk.grassdiary.global.common.error.exception.SystemException;
 import chzzk.grassdiary.global.common.response.ClientErrorCode;
+import chzzk.grassdiary.global.config.AwsProperties;
 import chzzk.grassdiary.global.util.file.FileFolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +24,18 @@ public class ImageService {
     private final ImageDAO imageDAO;
     private final AwsS3Service awsS3Service;
     private final DiaryToImageDAO diaryToImageDAO;
+    private final AwsProperties awsProperties;
 
     public ImageDTO uploadImage(MultipartFile image, FileFolder category) {
         if(image.isEmpty()) {
             throw new SystemException(ClientErrorCode.IMAGE_FILE_EMPTY);
         }
         String imagePath = awsS3Service.uploadBucket(image, category);
-        Image uploadedImage = imageDAO.save(new Image(imagePath));
+//        long sizeInKB = image.getSize() / 1024;
+        double sizeInKB = Math.round(((double) image.getSize() / 1024) * 100) / 100.0;
+        Image uploadedImage = imageDAO.save(new Image(imagePath, image.getOriginalFilename(), sizeInKB));
 
-        return new ImageDTO(uploadedImage.getId(), baseURL + imagePath);
+        return new ImageDTO(uploadedImage.getId(), baseURL + imagePath, image.getOriginalFilename(), sizeInKB);
     }
 
     /**
@@ -54,7 +58,7 @@ public class ImageService {
     }
 
     public String getImageURLByImage(Image image) {
-        return baseURL + image.getImagePath();
+        return awsProperties.getS3Url() + image.getImagePath();
     }
 
 }

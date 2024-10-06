@@ -3,13 +3,14 @@ package chzzk.grassdiary.domain.image.dto;
 
 import chzzk.grassdiary.domain.image.entity.DiaryToImage;
 
+
 public record ImageDTO (
         Long imageId,
-        String imageURL
+        String imageURL,
+        String imageName,
+        Double imageSize
 ) {
-    private static String baseURL = "https://chzzk-image-server.s3.ap-northeast-2.amazonaws.com/";
-
-    public static ImageDTO from(DiaryToImage diaryToImage) {
-        return new ImageDTO(diaryToImage.getImage().getId(), baseURL + diaryToImage.getImage().getImagePath());
+    public static ImageDTO from(DiaryToImage diaryToImage, String imageURL, String imageName, Double imageSize) {
+        return new ImageDTO(diaryToImage.getImage().getId(), imageURL, imageName, imageSize);
     }
 }

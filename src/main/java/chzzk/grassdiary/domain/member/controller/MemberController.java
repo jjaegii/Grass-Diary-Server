@@ -1,5 +1,8 @@
 package chzzk.grassdiary.domain.member.controller;
 
+import chzzk.grassdiary.domain.member.dto.EquipColorResponseDTO;
+import chzzk.grassdiary.domain.member.dto.MemberPurchasedColorsResponseDTO;
+import chzzk.grassdiary.domain.member.service.MemberService;
 import chzzk.grassdiary.domain.member.service.MyPageService;
 import chzzk.grassdiary.domain.member.dto.MemberInfoDTO;
 import chzzk.grassdiary.domain.member.dto.TotalRewardDTO;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +33,7 @@ public class MemberController {
     private final MyPageService myPageService;
     private final RewardService rewardService;
     private final WithdrawnMemberService withdrawnMemberService;
+    private final MemberService memberService;
 
     @GetMapping("profile/{memberId}")
     @Operation(
@@ -39,7 +44,7 @@ public class MemberController {
     public ResponseEntity<?> getProfileInfo(@PathVariable Long memberId) {
         return ResponseEntity.ok(myPageService.findProfileById(memberId));
     }
-    
+
     @GetMapping("totalReward/{memberId}")
     @Operation(
             summary = "멤버의 누적 리워드 정보",
@@ -56,4 +61,15 @@ public class MemberController {
         return ResponseEntity.ok("탈퇴가 완료되었습니다.");
     }
 
+    @GetMapping("/{memberId}/colors")
+    public MemberPurchasedColorsResponseDTO getMemberColors(@PathVariable Long memberId) {
+        return memberService.getPurchasedColors(memberId);
+    }
+
+    @PostMapping("/colors/{colorCodeId}/equip")
+    public EquipColorResponseDTO equipColor(
+            @PathVariable(name = "colorCodeId") Long colorCodeId,
+            @AuthenticatedMember AuthMemberPayload payload) {
+        return memberService.equipColor(payload.id(), colorCodeId);
+    }
 }

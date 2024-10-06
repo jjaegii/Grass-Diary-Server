@@ -1,8 +1,10 @@
 package chzzk.grassdiary.domain.member.entity;
 
 import chzzk.grassdiary.domain.base.BaseTimeEntity;
-import chzzk.grassdiary.domain.color.ColorCode;
+import chzzk.grassdiary.domain.color.entity.ColorCode;
 import chzzk.grassdiary.domain.diary.entity.Diary;
+import chzzk.grassdiary.global.common.error.exception.SystemException;
+import chzzk.grassdiary.global.common.response.ClientErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -94,11 +96,25 @@ public class Member extends BaseTimeEntity {
         this.rewardPoint += randomPoint;
     }
 
+
     public void withdrawMember() {
         this.rewardPoint = 0;
         this.nickname = "탈퇴한 회원";
         this.email = "withdrawnMember";
         this.profileIntro = null;
         this.picture = null;
+
+    public void deductRewardPoints(int points) {
+        if (this.rewardPoint < points) {
+            throw new SystemException(ClientErrorCode.INSUFFICIENT_REWARD_POINTS_ERR);
+        }
+        this.rewardPoint -= points;
+    }
+
+    public void equipColor(ColorCode newColor) {
+        if (this.currentColorCode.getId().equals(newColor.getId())) {
+            throw new SystemException(ClientErrorCode.COLOR_ALREADY_EQUIPPED_ERR);
+        }
+        this.currentColorCode = newColor;
     }
 }

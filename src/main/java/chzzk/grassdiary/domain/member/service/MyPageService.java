@@ -18,6 +18,6 @@ public class MyPageService {
     public MemberInfoDTO findProfileById(Long id) {
         Member member = memberDAO.findById(id)
                 .orElseThrow(() -> new SystemException(ClientErrorCode.MEMBER_NOT_FOUND_ERR));
-        return new MemberInfoDTO(member.getPicture(), member.getNickname(), member.getProfileIntro());
+        return new MemberInfoDTO(member.getPicture(), member.getNickname(), member.getProfileIntro(), member.getEmail());
     }
 }

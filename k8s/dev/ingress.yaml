@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-ingress
+  namespace: grass-diary-backend-dev
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - hosts:
+    - api.dev.grassdiary.site
+    secretName: dev-tls-secret
+  rules:
+  - host: api.dev.grassdiary.site
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: spring-boot-app-svc
+            port: 
+              number: 80
