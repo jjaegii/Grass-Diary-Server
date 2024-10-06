@@ -11,6 +11,7 @@ public enum ClientErrorCode implements ErrorCodeModel {
     AUTH_TOKEN_EXTRACTION_FAILED(401, "AUTH_TOKEN_EXTRACTION_FAILED", "액세스 토큰 추출에 실패했습니다."),
     AUTH_SESSION_EXPIRED(440, "AUTH_SESSION_EXPIRED", "세션이 만료되었습니다. 다시 로그인 해주세요."),
 
+    ALREADY_WITHDRAWN_MEMBER_ERR(409, "ALREADY_WITHDRAWN_MEMBER_ERR","이전에 탈퇴한 회원은 재가입할 수 없습니다."),
     MEMBER_NOT_FOUND_ERR(404, "MEMBER_NOT_FOUND_ERR", "요청하신 사용자를 찾을 수 없습니다."),
     PAST_DIARY_MODIFICATION_NOT_ALLOWED(409, "PAST_DIARY_MODIFICATION_NOT_ALLOWED", "과거의 일기는 수정할 수 없습니다."),
     DIARY_NOT_FOUND_ERR(404, "DIARY_NOT_FOUND_ERR", "요청하신 다이어리를 찾을 수 없습니다."),
@@ -25,7 +26,6 @@ public enum ClientErrorCode implements ErrorCodeModel {
     AUTHOR_MISMATCH_ERR(403, "AUTHOR_MISMATCH_ERR", "작성자가 아닙니다."),
     COMMENT_ALREADY_DELETED_ERR(400, "COMMENT_ALREADY_DELETED_ERR", "이미 삭제된 댓글입니다."),
     COMMENT_DEPTH_EXCEEDED_ERR(400, "COMMENT_DEPTH_EXCEEDED_ERR", "댓글은 대댓글까지만 허용합니다."),
-
     VALIDATION_ERR(400, "VALIDATION_ERR", "잘못된 입력입니다. 올바른 값을 입력해주세요."),
     PERMISSION_ERR(403, "PERMISSION_ERR", "접근 권한이 없습니다. 관리자에게 문의하세요."),
     TIMEOUT_ERR(408, "TIMEOUT_ERR", "요청 시간이 초과되었습니다. 다시 시도해주세요."),
